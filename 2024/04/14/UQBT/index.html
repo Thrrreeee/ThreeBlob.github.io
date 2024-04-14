@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha256-wiz7ZSCn/btzhjKDQBms9Hx4sSeUYsDrTLg7roPstac=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"thrrreeee.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="UQBT: Adaptable  Binary Translation at Low Cost 论文笔记 在描述机器和操作系统特性的规范的基础上来构建一个二进制翻译器，这种静态二进制转换框架支持各种处理器，包括复杂指令集计算机（CISC）、简化指令集计算机（RISC）和基于堆栈的机器。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="UQBT">
+<meta property="og:url" content="https://thrrreeee.github.io/2024/04/14/UQBT/index.html">
+<meta property="og:site_name" content="Threee的博客">
+<meta property="og:description" content="UQBT: Adaptable  Binary Translation at Low Cost 论文笔记 在描述机器和操作系统特性的规范的基础上来构建一个二进制翻译器，这种静态二进制转换框架支持各种处理器，包括复杂指令集计算机（CISC）、简化指令集计算机（RISC）和基于堆栈的机器。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://thrrreeee.github.io/images/paper1.PNG">
+<meta property="og:image" content="https://thrrreeee.github.io/images/paper2.PNG">
+<meta property="og:image" content="https://thrrreeee.github.io/images/paper3.PNG">
+<meta property="og:image" content="https://thrrreeee.github.io/images/paper4.PNG">
+<meta property="article:published_time" content="2024-04-14T07:37:49.000Z">
+<meta property="article:modified_time" content="2024-04-14T07:56:44.808Z">
+<meta property="article:author" content="Three">
+<meta property="article:tag" content="paper">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://thrrreeee.github.io/images/paper1.PNG">
+
+
+<link rel="canonical" href="https://thrrreeee.github.io/2024/04/14/UQBT/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://thrrreeee.github.io/2024/04/14/UQBT/","path":"2024/04/14/UQBT/","title":"UQBT"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>UQBT | Threee的博客</title>
+  
+
+
+
+
+
+
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/love.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Threee的博客</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">好好学习 天天向上</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-tags"><a href="/tags" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Design-Goals"><span class="nav-number">1.</span> <span class="nav-text">Design Goals</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Design"><span class="nav-number">2.</span> <span class="nav-text">Design</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Support-multiple-machine-inexpensively"><span class="nav-number">2.1.</span> <span class="nav-text">Support multiple machine inexpensively</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Decoding-binary-code-to-Ms-RTLs"><span class="nav-number">2.2.</span> <span class="nav-text">Decoding binary code to Ms-RTLs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Translating-MS-RTLs-up-to-HRTL"><span class="nav-number">2.3.</span> <span class="nav-text">Translating MS-RTLs up to HRTL</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Control-transfers"><span class="nav-number">2.3.1.</span> <span class="nav-text">Control transfers</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Recovering-parameters-and-return-values"><span class="nav-number">2.3.2.</span> <span class="nav-text">Recovering parameters and return values</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Type-analysis"><span class="nav-number">2.3.3.</span> <span class="nav-text">Type analysis</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Manipulating-HRTL"><span class="nav-number">2.3.4.</span> <span class="nav-text">Manipulating HRTL</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Translating-HRTL-down-to-binary-code"><span class="nav-number">2.4.</span> <span class="nav-text">Translating HRTL down to binary code</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Interpretation-hooks"><span class="nav-number">2.4.1.</span> <span class="nav-text">Interpretation hooks</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Target-binaries"><span class="nav-number">2.4.2.</span> <span class="nav-text">Target binaries</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EXPERIENCE-WITH-THE-UQBT-FRAMEWORK"><span class="nav-number">2.5.</span> <span class="nav-text">EXPERIENCE WITH THE UQBT FRAMEWORK</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Translation-quality"><span class="nav-number">2.5.1.</span> <span class="nav-text">Translation quality</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Effort"><span class="nav-number">2.5.2.</span> <span class="nav-text">Effort</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conclusion"><span class="nav-number">3.</span> <span class="nav-text">conclusion</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Three"
+      src="/images/new.png">
+  <p class="site-author-name" itemprop="name">Three</p>
+  <div class="site-description" itemprop="description">不会C++的编译器小白</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Thrrreeee" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Thrrreeee" rel="noopener me" target="_blank"><i class="fab fa-github fa-github-alt fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/51265903112@stu.ecnu.edu.cn" title="E-Mail → 51265903112@stu.ecnu.edu.cn" rel="noopener me"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    
+      <script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+      <script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+      <div class="widget-wrap">
+          <h3 class="widget-title">Tag Cloud</h3>
+          <div id="myCanvasContainer" class="widget tagcloud">
+              <canvas width="250" height="250" id="resCanvas" style="width:100%">
+                  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/blob/" rel="tag">blob</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jit/" rel="tag">jit</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linker/" rel="tag">linker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/" rel="tag">paper</a><span class="tag-list-count">1</span></li></ul>
+              </canvas>
+          </div>
+      </div>
+
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://thrrreeee.github.io/2024/04/14/UQBT/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/new.png">
+      <meta itemprop="name" content="Three">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Threee的博客">
+      <meta itemprop="description" content="不会C++的编译器小白">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="UQBT | Threee的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          UQBT
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-04-14 15:37:49 / 修改时间：15:56:44" itemprop="dateCreated datePublished" datetime="2024-04-14T15:37:49+08:00">2024-04-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%BA%E6%96%87/" itemprop="url" rel="index"><span itemprop="name">论文</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>6 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>UQBT: Adaptable  Binary Translation at Low Cost 论文笔记</p>
+<p>在描述机器和操作系统特性的规范的基础上来构建一个二进制翻译器，这种静态二进制转换框架支持各种处理器，包括复杂指令集计算机（CISC）、简化指令集计算机（RISC）和基于堆栈的机器。</p>
+<span id="more"></span>
+
+<h2 id="Design-Goals"><a href="#Design-Goals" class="headerlink" title="Design Goals"></a>Design Goals</h2><p>主流的二进制翻译器都受制于目标机器（需要针对目标机器进行针对化设计），导致开发成本高。UQBT的各个组件都经过精细化开发，实现可以在不同机器上进行重用。</p>
+<p><strong>目标：</strong>UQBT是一个<strong>retargetable and re-sourceable</strong>的二进制翻译器（既可以改变源机器又可以改变目标机器）</p>
+<p><strong>思想：</strong>将machine-dependent和machine-independent的问题进行分离。对于machine-dependent问题则通过描述（或规范）语言支持依赖相关的组件（具体就是将其抽象为某种中间语言），对于machine-independent问题则可以直接复用。</p>
+<p><strong>缺陷</strong>：（一）解决了指令集、中间值（数据的字节顺序）约定、调用约定和二进制文件格式的差别，但未解决操作系统层面的差别（ABI和系统调用？）。（二）处理用户代码（应用程序），但不处理内核代码或动态链接的库。</p>
+<p>准备看看后续的SBT是如何解决上述的问题，关键是内核代码和动态链接库的处理。</p>
+<h2 id="Design"><a href="#Design" class="headerlink" title="Design"></a>Design</h2><h3 id="Support-multiple-machine-inexpensively"><a href="#Support-multiple-machine-inexpensively" class="headerlink" title="Support multiple machine inexpensively"></a>Support multiple machine inexpensively</h3><p>分为三个阶段：解码-分析-编码 （分别对应decoder、analysis和encoder三个组件），前端解码源二进制文件，分析器对程序的表现形式进行转化（IR形式），后端优化编码生成新的二进制文件。</p>
+<p><img src="/images/paper1.PNG" alt="img"></p>
+<p><strong>解码器将其转换为</strong>IR<strong>的形式，UQBT中主要分为两种RTLs和HRTL：</strong></p>
+<p><strong>RTLs（register transfer lists）：用来描述<strong><strong>机器指令</strong></strong>对寄存器的影响，就是说将机器指令转换为一系列对寄存器的操作，并且通过RTLs这个<strong><strong>IR</strong></strong>进行表示便于后续的处理。（每个机器的RTLs都是不一样的，machine-dependent）</strong></p>
+<p><strong>HRTL（Higher-Level</strong> <strong>Register Transfer Language</strong> <strong>）：同样也是描述寄存器操作，支持基本控制传输（条件和无条件跳转、调用和返回）和无限数量的寄存器。（每个机器的HRTL都是一样的，machine-independent）</strong></p>
+<blockquote>
+<p>一个机器的指令集包括：语法（与哪个装配指令相匹配），语义（一个特定的装配指令意味着什么），控制传输指令（哪个指令改变程序的控制流程以及如何进行），以及它的延迟控制传输。</p>
+<p>UQBT使用不同的语言对特性进行了描述：</p>
+<p>Specification Language for Encoding and Decoding (SLED)  :语法（syntax）</p>
+<p>Semantic Specification Language (SSL) :语义（semantics）</p>
+<p>Control-Transfer Language (CTL)： 控制传输指令（control-transfer）</p>
+<p>Delayed Control-Transfer Language(DCTL)： 延迟传输（delayed control transfer） </p>
+<p>操作系统的约定和格式以调用约定（call convention）的形式出现，包括参数传递的位置（例如，堆栈或寄存器）、进程堆栈帧的描述和本地变量所在的位置，以及操作系统所要求的二进制文件格式(binary format)。</p>
+<p>UQBT使用不同的IR对特性进行了描述：</p>
+<p>Procedure Abstraction Language(PAL)：call convention</p>
+<p>Binary File Format (BFF) : binary format </p>
+</blockquote>
+<p><img src="/images/paper2.PNG" alt="img"></p>
+<p><strong>下述内容与上图直接相关</strong></p>
+<h3 id="Decoding-binary-code-to-Ms-RTLs"><a href="#Decoding-binary-code-to-Ms-RTLs" class="headerlink" title="Decoding binary code to Ms-RTLs"></a>Decoding binary code to Ms-RTLs</h3><p>主要可以分为三步：</p>
+<p>一、将源二进制文件解码放入二进制文件解码器（binary-file decoder）生成二进制指令流，并将二进制指令流提供给指令解码器。描述二进制文件格式内容来构建解码器（ELF，PE等）</p>
+<p>二、指令解码器（instruction decoder）将指令流的的每条指令和操作进行识别，使用the New Jersey Machine-Code的工具包根据<strong>SLED</strong>规范自动生成解码器的一部分。</p>
+<p>三、语义映射器（semantic mapper）将每个指令以Ms-RTL的形式映射到其语义表示中。<strong>SSL</strong>通过将每条指令与一个Ms-RTL相关联，来驱动语义映射器。</p>
+<p><strong>二进制文件变**<strong>指令流</strong></strong>-&gt;解析指令流-&gt;具体为寄存器操作**</p>
+<h3 id="Translating-MS-RTLs-up-to-HRTL"><a href="#Translating-MS-RTLs-up-to-HRTL" class="headerlink" title="Translating MS-RTLs up to HRTL"></a>Translating MS-RTLs up to HRTL</h3><p>识别间接控制传输的目标，将基本控制传输转换为HRTL指令，并确定过程调用的参数和返回位置。例如将Pentium基于堆栈的浮点指令转换为flat寄存器模型实现复用。</p>
+<h4 id="Control-transfers"><a href="#Control-transfers" class="headerlink" title="Control transfers"></a>Control transfers</h4><p>使用CTL来实现对有条件的或无条件的跳转、调用和返回的转换。call mapping仅仅识别调用指令本身，然后通过Ms-RTLs和源机器的约定对参数进行推断。</p>
+<h4 id="Recovering-parameters-and-return-values"><a href="#Recovering-parameters-and-return-values" class="headerlink" title="Recovering parameters and return values"></a>Recovering parameters and return values</h4><p>UQBT使用可达性和活动性分析，根据调用约定和可以传递参数和返回值的位置来恢复参数和返回值信息。PAL指定了这些信息（指定ABI–描述了为特定操作系统所允许的调用约定、堆栈帧的分布、分配本地变量的位置等），并描述了过程的堆栈帧和局部变量在堆栈上的有效位置。</p>
+<p>UQBT对调用者和被调用者使用前语和后语（短习语指令序列）的概念。对于被调用者来说，前语和后语分别代表函数的开头和结尾。对于调用者来说千语是自身，后语为调用之后的清理工作。</p>
+<p><img src="/images/paper3.PNG" alt="img"></p>
+<p>Incoming parameters会针对性进行偏移一个simm13的量，%afp是一个抽象帧指针来作为栈帧的参照。</p>
+<p><img src="/images/paper4.PNG" alt="img"></p>
+<p>将其进行等价为HRTL</p>
+<h4 id="Type-analysis"><a href="#Type-analysis" class="headerlink" title="Type analysis"></a>Type analysis</h4><p>UQBT主要分析区分四个类型：整数、浮点值、指向数据的指针和指向代码的指针（包含他们的大小和符号），四个类型足以用来进程的参数和返回值。使用RTLs中的等价语义替换对helper routine的调用。</p>
+<h4 id="Manipulating-HRTL"><a href="#Manipulating-HRTL" class="headerlink" title="Manipulating HRTL"></a>Manipulating HRTL</h4><p>同样转换为HRTL是有利的，能够共用一个翻译器的后端，并且能够使用目标机器的相关约定。此外还可以允许将特定于二进制转换的优化插入到UQBT框架中</p>
+<h3 id="Translating-HRTL-down-to-binary-code"><a href="#Translating-HRTL-down-to-binary-code" class="headerlink" title="Translating HRTL down to binary code"></a>Translating HRTL down to binary code</h3><p>接口到Zephyr project的一部分，然后对HRTL进行翻译。将生成的代码和数据放到各种C和汇编文件中，这些文件可以用目标机器的任何C编译器和汇编器进行编译。每个函数都用一个低级的C文件来表示。对于每个数据部分，UQBT将生成一个汇编文件。并且使用makefile对文件进行打包，以便于针对更为复杂的程序。</p>
+<h4 id="Interpretation-hooks"><a href="#Interpretation-hooks" class="headerlink" title="Interpretation hooks"></a>Interpretation hooks</h4><p>在静态二进制翻译中需要解释器或者仿真器对运行在发现的未翻译的代码进行处理，解释器直接使用Ms-&gt;Mt的映射，这个映射表直接存储在目标二进制文件中，并且会将源代码部分文本也放在目标二进制文件中。</p>
+<h4 id="Target-binaries"><a href="#Target-binaries" class="headerlink" title="Target binaries"></a>Target binaries</h4><p>静态二进制翻译无法解决全部的问题，所以UQBT将数据部分复制到目标二进制文件中，这些数据通过映射器保存为源文件中的虚拟地址（便于直接查找）。</p>
+<h3 id="EXPERIENCE-WITH-THE-UQBT-FRAMEWORK"><a href="#EXPERIENCE-WITH-THE-UQBT-FRAMEWORK" class="headerlink" title="EXPERIENCE WITH THE UQBT FRAMEWORK"></a>EXPERIENCE WITH THE UQBT FRAMEWORK</h3><h4 id="Translation-quality"><a href="#Translation-quality" class="headerlink" title="Translation quality"></a>Translation quality</h4><p>对于同ISA的翻译，执行速度基本一致。Sparc和Pentium，对于缺乏显著静态数据处理的程序，翻译后程序性能更好。对于静态数据处理较多的速度降低1.2到2倍（与大端存储和小端存储相关）。</p>
+<p>大端与小端存储的区别和意义？</p>
+<h4 id="Effort"><a href="#Effort" class="headerlink" title="Effort"></a>Effort</h4><p>架构化，帮助开发者减少对二进制翻译器的开发工作量，节约时间成本，其次架构可以重复使用。</p>
+<h2 id="conclusion"><a href="#conclusion" class="headerlink" title="conclusion"></a>conclusion</h2><p>UQBT项目验证了通过使用规范以低成本支持各种机器来创建适应性强的二进制翻译环境的可行性。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer"><div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>再接再厉-------------</div>
+    
+</div>
+          <div class="post-tags">
+              <a href="/tags/paper/" rel="tag"><i class="fa fa-tag"></i> paper</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/04/14/CSAPP%E9%93%BE%E6%8E%A5/" rel="prev" title="CSAPP链接">
+                  <i class="fa fa-angle-left"></i> CSAPP链接
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Three</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">31k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">57 分钟</span>
+  </span>
+</div>
+
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span>
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("03/01/2023 10:00:00"); //此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒.";
+    }
+setInterval("createtime()",250);
+</script>
+    </div>
+  </footer>
+  
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

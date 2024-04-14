@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha256-wiz7ZSCn/btzhjKDQBms9Hx4sSeUYsDrTLg7roPstac=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"thrrreeee.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.19.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="链接是将源代码文件中的函数和全局变量等符号与其他源代码文件或库文件中的定义进行关联的过程。链接的目标是生成一个可执行文件，其中包含了所有必要的代码和数据，以便程序在运行时能够正确地执行。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSAPP链接">
+<meta property="og:url" content="https://thrrreeee.github.io/2024/04/14/CSAPP%E9%93%BE%E6%8E%A5/index.html">
+<meta property="og:site_name" content="Threee的博客">
+<meta property="og:description" content="链接是将源代码文件中的函数和全局变量等符号与其他源代码文件或库文件中的定义进行关联的过程。链接的目标是生成一个可执行文件，其中包含了所有必要的代码和数据，以便程序在运行时能够正确地执行。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://thrrreeee.github.io/images/csapp1.PNG">
+<meta property="og:image" content="https://thrrreeee.github.io/images/csapp2.PNG">
+<meta property="og:image" content="https://thrrreeee.github.io/images/csapp3.PNG">
+<meta property="og:image" content="https://thrrreeee.github.io/images/csapp4.PNG">
+<meta property="og:image" content="https://thrrreeee.github.io/images/csapp5.PNG">
+<meta property="og:image" content="https://thrrreeee.github.io/images/csapp6.PNG">
+<meta property="og:image" content="https://thrrreeee.github.io/images/csapp7.PNG">
+<meta property="article:published_time" content="2024-04-14T04:48:26.000Z">
+<meta property="article:modified_time" content="2024-04-14T07:55:07.857Z">
+<meta property="article:author" content="Three">
+<meta property="article:tag" content="linker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://thrrreeee.github.io/images/csapp1.PNG">
+
+
+<link rel="canonical" href="https://thrrreeee.github.io/2024/04/14/CSAPP%E9%93%BE%E6%8E%A5/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://thrrreeee.github.io/2024/04/14/CSAPP%E9%93%BE%E6%8E%A5/","path":"2024/04/14/CSAPP链接/","title":"CSAPP链接"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>CSAPP链接 | Threee的博客</title>
+  
+
+
+
+
+
+
+
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/love.js"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Threee的博客</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">好好学习 天天向上</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-tags"><a href="/tags" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#7-1-%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5"><span class="nav-number">1.</span> <span class="nav-text">7.1 静态链接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-2-%E7%9B%AE%E6%A0%87%E6%96%87%E4%BB%B6"><span class="nav-number">2.</span> <span class="nav-text">7.2 目标文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-3-%E5%8F%AF%E9%87%8D%E5%AE%9A%E4%BD%8D%E6%96%87%E4%BB%B6"><span class="nav-number">3.</span> <span class="nav-text">7.3 可重定位文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-4-%E7%AC%A6%E5%8F%B7%E5%92%8C%E7%AC%A6%E5%8F%B7%E8%A1%A8"><span class="nav-number">4.</span> <span class="nav-text">7.4 符号和符号表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-6-%E7%AC%A6%E5%8F%B7%E8%A7%A3%E6%9E%90"><span class="nav-number">5.</span> <span class="nav-text">7.6 符号解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-6-1-%E9%93%BE%E6%8E%A5%E5%99%A8%E5%A6%82%E4%BD%95%E8%A7%A3%E6%9E%90%E5%A4%9A%E5%A4%84%E5%AE%9A%E4%B9%89%E7%9A%84%E5%85%A8%E5%B1%80%E7%AC%A6%E5%8F%B7"><span class="nav-number">5.1.</span> <span class="nav-text">7.6.1 链接器如何解析多处定义的全局符号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-6-2-%E4%B8%8E%E9%9D%99%E6%80%81%E5%BA%93%E9%93%BE%E6%8E%A5"><span class="nav-number">5.2.</span> <span class="nav-text">7.6.2 与静态库链接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-6-3-%E9%93%BE%E6%8E%A5%E5%99%A8%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%E9%9D%99%E6%80%81%E5%BA%93%E6%9D%A5%E8%A7%A3%E6%9E%90%E5%BC%95%E7%94%A8"><span class="nav-number">5.3.</span> <span class="nav-text">7.6.3 链接器如何使用静态库来解析引用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-7-%E9%87%8D%E5%AE%9A%E4%BD%8D"><span class="nav-number">6.</span> <span class="nav-text">7.7 重定位</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-7-1%E9%87%8D%E5%AE%9A%E4%B9%89%E8%A1%A8%E7%9B%AE"><span class="nav-number">6.1.</span> <span class="nav-text">7.7.1重定义表目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-7-2-%E9%87%8D%E5%AE%9A%E4%BD%8D%E7%AC%A6%E5%8F%B7%E5%BC%95%E7%94%A8"><span class="nav-number">6.2.</span> <span class="nav-text">7.7.2 重定位符号引用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-8-%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%9B%AE%E6%A0%87%E6%96%87%E4%BB%B6"><span class="nav-number">7.</span> <span class="nav-text">7.8 可执行目标文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-9-%E5%8A%A0%E8%BD%BD%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%9B%AE%E6%A0%87%E6%96%87%E4%BB%B6"><span class="nav-number">8.</span> <span class="nav-text">7.9 加载可执行目标文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-10-%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%85%B1%E4%BA%AB%E5%BA%93"><span class="nav-number">9.</span> <span class="nav-text">7.10 动态链接共享库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-12-%E4%B8%8E%E4%BD%8D%E7%BD%AE%E6%97%A0%E5%85%B3%E7%9A%84%E4%BB%A3%E7%A0%81%EF%BC%88PIC%EF%BC%89"><span class="nav-number">10.</span> <span class="nav-text">7.12 与位置无关的代码（PIC）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-12-1-PIC%E6%95%B0%E6%8D%AE%E5%BC%95%E7%94%A8"><span class="nav-number">10.1.</span> <span class="nav-text">7.12.1 PIC数据引用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-12-2-PIC%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8"><span class="nav-number">10.2.</span> <span class="nav-text">7.12.2 PIC函数调用</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Three"
+      src="/images/new.png">
+  <p class="site-author-name" itemprop="name">Three</p>
+  <div class="site-description" itemprop="description">不会C++的编译器小白</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Thrrreeee" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Thrrreeee" rel="noopener me" target="_blank"><i class="fab fa-github fa-github-alt fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/51265903112@stu.ecnu.edu.cn" title="E-Mail → 51265903112@stu.ecnu.edu.cn" rel="noopener me"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    
+      <script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+      <script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+      <div class="widget-wrap">
+          <h3 class="widget-title">Tag Cloud</h3>
+          <div id="myCanvasContainer" class="widget tagcloud">
+              <canvas width="250" height="250" id="resCanvas" style="width:100%">
+                  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/blob/" rel="tag">blob</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jit/" rel="tag">jit</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linker/" rel="tag">linker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/paper/" rel="tag">paper</a><span class="tag-list-count">1</span></li></ul>
+              </canvas>
+          </div>
+      </div>
+
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://thrrreeee.github.io/2024/04/14/CSAPP%E9%93%BE%E6%8E%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/new.png">
+      <meta itemprop="name" content="Three">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Threee的博客">
+      <meta itemprop="description" content="不会C++的编译器小白">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="CSAPP链接 | Threee的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CSAPP链接
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-04-14 12:48:26 / 修改时间：15:55:07" itemprop="dateCreated datePublished" datetime="2024-04-14T12:48:26+08:00">2024-04-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>8 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>链接是将源代码文件中的函数和全局变量等符号与其他源代码文件或库文件中的定义进行关联的过程。链接的目标是生成一个可执行文件，其中包含了所有必要的代码和数据，以便程序在运行时能够正确地执行。</p>
+<span id="more"></span>
+<h2 id="7-1-静态链接"><a href="#7-1-静态链接" class="headerlink" title="7.1 静态链接"></a>7.1 静态链接</h2><p><strong>1.符号解析：</strong>目标文定义和引用符号，为了将每个符号引用和一个符号定义关联系起来。</p>
+<p><strong>2.重定位：</strong>编译器和汇编器生成从地址零开始的代码和数据节。链接器通过把每个符号定义与一个存储器位置联系起来，然后修改所有对这些符号的引用，使得他们指向这个存储器位置，从而重定位这些节。</p>
+<p>（目标文件纯粹是字节块的集合，包含代码，数据，其他包含指导链接器和加载器的数据结构）</p>
+<h2 id="7-2-目标文件"><a href="#7-2-目标文件" class="headerlink" title="7.2 目标文件"></a>7.2 目标文件</h2><p><strong>1.可重定位目标文件：</strong>二进制代码与数据，编译时与其他可重定位文件合并起来创建一个可执行目标文件。</p>
+<p><strong>2.可执行目标文件：</strong>二进制代码和数据，可以直接拷贝到存储器进行执行。</p>
+<p><strong>3.共享目标文件：</strong>特殊形式的可重定位文件，可以在加载或者运行时被动态加载到存储器并链接。</p>
+<p>编译器和汇编器生成可重定位目标文件（包括共享文件），而链接器生成可执行文件。</p>
+<p>分清目标模块与目标文件：字节序列—-存在磁盘文件中的目标模块。</p>
+<h2 id="7-3-可重定位文件"><a href="#7-3-可重定位文件" class="headerlink" title="7.3 可重定位文件"></a>7.3 可重定位文件</h2><p>其中包括 ELF 头的大小、目标文件的类型(比如，可重定位、可执行或者是共享的)、机器类型(比如，IA32)、节头部表 (section header table) 的文件偏移，以及节头部表中的表目大小和数量。</p>
+<p><img src="/images/csapp1.PNG" alt="img"></p>
+<p><strong>.text:</strong> 已编译程序的机器代码。</p>
+<p><strong>.rodata:</strong> 只读数据，printf语句中的格式串…switch判断的符号。</p>
+<p><strong>.data:</strong> 已初始化的全局C变量，而局部变量存储在栈中。</p>
+<p><strong>.bss:</strong> 未初始化的全局C变量，不占空间仅仅是一个占位符…</p>
+<p><strong>.symtab:</strong> 一个符号表 (symbol table)，存放程序中被定义和引用的函数和全局变量信息。，symtab符号表不包含局部变量的表目。</p>
+<p><strong>.rel.text:</strong> 当链接器把这个目标文件和其他文件结合时，.text 节中的许多位置都需要修改。（调用外部函数或者引用全局变量的指令都需要更改，而调用本地函数的指令则不需要），可执行文件不需要重定位信息。</p>
+<p><strong>.rel.data:</strong> 被模块定义或引用的任何全局变量的信息。</p>
+<p><strong>.debug:</strong> 一个调试符号表，其有些表目是程序中定义的局部变量和类型定义。</p>
+<p><strong>.line:</strong> 原始C 源程序中的行号和ext 节中机器指令之间的映射。</p>
+<p><strong>.strtab:</strong> 一个字符串表，其内容包括symtab 和debug 节中的符号表，以及节头部中的节名字。</p>
+<h2 id="7-4-符号和符号表"><a href="#7-4-符号和符号表" class="headerlink" title="7.4 符号和符号表"></a>7.4 符号和符号表</h2><p>链接器中有三种符号：（对于可重定位目标模块m）</p>
+<p>（一）由m定义并且能够被其他模块引用的为<strong>全局符号</strong>。</p>
+<p>（二）由其他模块定义并且被m引用的全局符号为<strong>外部符号</strong>。</p>
+<p>（三）只被m定义和引用的为<strong>本地符号</strong>。</p>
+<p>符号表不包含对应于本地非静态程序变量的任何符号，这些符号在运行过程中被栈管理。</p>
+<p>static属性的本地过程变量是不在栈中管理的，编译器在.data与.bss中为每个定义分配空间，并且在符号表中创建一个有唯一名字的本地连接器符号。</p>
+<p>符号表由编译器构造。</p>
+<h2 id="7-6-符号解析"><a href="#7-6-符号解析" class="headerlink" title="7.6 符号解析"></a>7.6 符号解析</h2><p>链接器解析符号引用的方法是将每个引用与他输入的可重定位目标文件的符号表中的一个确定的符号定义联系起来。</p>
+<p>C++与JAVA支持重载函数，因为编译器将每个唯一的方法和参数列表组合编码成一个对链接器来收唯一的名字。例如Foo:bar(int , long)编码为bar_3Fooil，类似于这种方式给予一个唯一的名字便于链接器进行分辨。</p>
+<h3 id="7-6-1-链接器如何解析多处定义的全局符号"><a href="#7-6-1-链接器如何解析多处定义的全局符号" class="headerlink" title="7.6.1 链接器如何解析多处定义的全局符号"></a>7.6.1 链接器如何解析多处定义的全局符号</h3><p>编译时期，编译器将输出每个全局符号给汇编器，而汇编器把这个信息隐含地编码在可重定位目标文件的符号表里。</p>
+<p>函数和已初始化的全局变量为强符号，未初始化的全局变量是弱符号。</p>
+<p>符号选择规则：</p>
+<p>1.不允许多个强符号。</p>
+<p>2.一个强符号和多个弱符号，选择强符号。</p>
+<p>3.多个弱符号，随机选择。</p>
+<h3 id="7-6-2-与静态库链接"><a href="#7-6-2-与静态库链接" class="headerlink" title="7.6.2 与静态库链接"></a>7.6.2 与静态库链接</h3><p>将所有线管的目标模块打包为一个单独的文件，称为静态库，它可以用作链接器的输入。</p>
+<p>为了避免每次都需要编译整个标准函数集合，我们会对将相关函数被编译成独立的目标模块，然后封装为一个单独的静态库文件。</p>
+<p>Unix系统中，静态库以存档（archive）的特殊文件格式存放在磁盘中。</p>
+<h3 id="7-6-3-链接器如何使用静态库来解析引用"><a href="#7-6-3-链接器如何使用静态库来解析引用" class="headerlink" title="7.6.3 链接器如何使用静态库来解析引用"></a>7.6.3 链接器如何使用静态库来解析引用</h3><p>在符号解析阶段，链接器从左到右按照它们在编译器驱动程序命令行上出现的相同顺序来扫描可重定位目标文件和存档文件。链接器在扫描中会维持一个可重定位目标文件的集合E，这个集合中的文件会被合并起来形成可秩序文件，和一个为解析的符号（引用了但是尚未定义的符号）集合U，以及一个在前面输入文件中已定义的符号集合D。初始E、U和D全是空的。</p>
+<p>1.对于命令行上的每个输入文件f，链接器会判断f是一个目标文件还是一个存档文件（archive）如果f是一个目标文件则将其添加到E，修改E和D来反映f中的符号定义和引用，再继续下一个输入文件。</p>
+<p>2.如果f是一个存档文件，那么链接器就尝试匹配U中未解析的符号和由存档文件成员定义的符号。如果某个存档文件成员m，定义了一个符号来解析U中的一个引用，那么就将m加到E中，并且链接器修改U和D来反映m中的符号定义和引用。对于存档文件中所有的成员目标文件都反复进行这个过程，直到U和D都不再发生变化。此时，任何不包含在E中的成员目标文件都被丢弃，而链接器将继续到下一个输入文件。</p>
+<p>3.当链接器完成对命令行上输入文件的扫描之后，U是非空的，那么链接器就会输出一个错误并且终止。否则，他会合并和重定位E中的目标文件，从而构建输出的可执行文件。</p>
+<p>！！！如果符号的定义出现在引用这个符号的目标文件之前，那么就无法被解析。（库一般放末尾，若不是相互独立需要考虑先后顺序关系）</p>
+<h2 id="7-7-重定位"><a href="#7-7-重定位" class="headerlink" title="7.7 重定位"></a>7.7 重定位</h2><p>重定义分为两步：</p>
+<p><strong>重定位节和符号定义。</strong>在这一步中，<strong>链接器将所有相同类型的节合并为同一类型的新的聚合节。</strong>例如，来自输入模块的.data 节被全部合并成一个节，这个节成为输出的可执行目标文件的.data 节。然后，链接器将运行时存储器地址赋给新的聚合节，赋给输入模块定义的每个节，以及赋给输入模块定义的每个符号。当这一步完成时，<strong>程序中的每个<strong><strong>指令</strong></strong>和全局变量都有惟一的运行时存储器地址了。</strong> <strong>2.重定位节中的符号引用。</strong>在这一步中，<strong>链接器修改代码节和数据节中对每个符号的引用</strong>，使得它们指向正确的运行时地址。为了执行这一步，链接器依赖于称为<strong>重定位表目 (relocation entry)的可重定位目标模块中的数据结构</strong>，我们接下来将会描述这种数据结构。</p>
+<h3 id="7-7-1重定义表目"><a href="#7-7-1重定义表目" class="headerlink" title="7.7.1重定义表目"></a>7.7.1重定义表目</h3><p>未知数据和代码将会存放在存储器的什么位置，无论合适汇编器遇到对最终位置未知的目标引用，他就会生成一个重定位表目，告诉链接器在将目标文件合并成可执行文件时如何修改这个引用。</p>
+<p>ELF 重定位表目的格式offset 是需要被修改的引用的节偏移。symbol 标识被修改引用应该指向的符号。type 告知链接器如何修改新的引用。</p>
+<p><img src="/images/csapp2.PNG" alt="img"></p>
+<h3 id="7-7-2-重定位符号引用"><a href="#7-7-2-重定位符号引用" class="headerlink" title="7.7.2 重定位符号引用"></a>7.7.2 重定位符号引用</h3><p>如何引用，偏移，绝对路径等算法进行引用</p>
+<h2 id="7-8-可执行目标文件"><a href="#7-8-可执行目标文件" class="headerlink" title="7.8 可执行目标文件"></a>7.8 可执行目标文件</h2><p>可执行文件已经完全链接的（已经被重定位），所以他就不需要.relo节。</p>
+<p><img src="/images/csapp3.PNG" alt="img"></p>
+<h2 id="7-9-加载可执行目标文件"><a href="#7-9-加载可执行目标文件" class="headerlink" title="7.9 加载可执行目标文件"></a>7.9 加载可执行目标文件</h2><p>通过调用某个驻留在存储器中称为加载器的操作系统代码来为我们运行可执行文件。加载器将可执行目标文件中的代码和数据从磁盘拷贝到存储器中，然后通过跳转到程序的第 1 条指令，即入口点 (entry point)，来运行该程序。这个将程序拷贝到存储器并运行的过程叫做加载 (Ioading)。</p>
+<p>在可执行文件中段头表的指导下，加载器将可执行文件的相关内容拷贝到代码和数据段。接下来，加载器跳转到程序的入口点，也就是符号<em>start 的地址。在</em>start 地址处的启动代码（ startup code)是在目标文件ctrl.o中定义的，对所有的C程序都是一样的。展示了启动代码中特殊的调用序列。在从text 和init 节中调用了初始化例程后，启动代码调用atexit 例程，这个程序附加了一系列在应用调用exit 函数时应该调用的程序exit 函数运行 atexit 注册的函数，然后通过调用exit 将控制返回给操作系统。接着，启动代码调用应用程序的 main 程序，这就开始执行我们的C代码了。在应用程序返回之后，启动代码调用exit程序，它将控制返回给操作系统。</p>
+<p><img src="/images/csapp4.PNG" alt="img"></p>
+<h2 id="7-10-动态链接共享库"><a href="#7-10-动态链接共享库" class="headerlink" title="7.10 动态链接共享库"></a>7.10 动态链接共享库</h2><p>共享库是一个目标模块，在运行时，可以加载到任意的存储器地址，并在存储器中和一个程序链接起来。这个过程称为动态链接 (dynamic linking)，是由一个叫做动态链接器 (dynamic linker)的程序来执行的。</p>
+<p>（一）所有引用该库的可执行目标文件共享这个.so文件中的代码和数据，而不是像静态库的内容那样直接被拷贝和嵌入到引用他们的可执行文件中。（二）一个共享库的.text节只有一个副本可以被不同的正在运行的进程共享。（不会拷贝任何数据和代码到可执行文件中，链接器仅仅拷贝了一些重定位和符号表信息）.interp节中包含动态链接器的路径名，动态链接器本身就是一个共享目标。</p>
+<p><img src="/images/csapp5.PNG" alt="img"></p>
+<h2 id="7-12-与位置无关的代码（PIC）"><a href="#7-12-与位置无关的代码（PIC）" class="headerlink" title="7.12 与位置无关的代码（PIC）"></a>7.12 与位置无关的代码（PIC）</h2><p>一种方法是给每个共享库分配一个事先预备的专用的地址空间组块 (chunk)，然后要求加载器总是在这个地址加载共享库。首先，它对地址空间的使用效率不高，因为即使一个进程不使用这个库，那部分空间还是会被分配出来。第二，它也难以管理。我们将不得不保证没有组块会重叠。每次当一个库修改了之后，我们必须确认它的已分配的组块还适合它的大小。如果不适合了，我们必须找一个新的组块。并且，如果我们创建了一个新的库，我们还必须为它寻找空间。</p>
+<p>以更好地方法就是编译库代码，使得不需要链接器修改库代码，就可以在任何地址加载和执行这些代码，称为位置无关的代码。</p>
+<h3 id="7-12-1-PIC数据引用"><a href="#7-12-1-PIC数据引用" class="headerlink" title="7.12.1 PIC数据引用"></a>7.12.1 PIC数据引用</h3><p><img src="/images/csapp6.PNG" alt="img"></p>
+<p>需要额外的五条指令来引用全局变量。</p>
+<p>无论我们在存储器中的何处加载一个目标模块（包括共享目标模块），数据段总是分配为紧随在代码段后面。</p>
+<p>编译器在数据段开始的地方创建了一个表，叫做全局偏移量表(global offsettable，GOT)。GOT 包含每个被这个目标模块引用的全局数据目标的表目。编译器还为 GOT 中每个表目生成一个重定位记录。在加载时，动态链接器会重定位 GOT 中的每个表目，使得它包含正确的绝对地址。每个引用全局数据的目标模块都有一张自己的 GOT。</p>
+<h3 id="7-12-2-PIC函数调用"><a href="#7-12-2-PIC函数调用" class="headerlink" title="7.12.2 PIC函数调用"></a>7.12.2 PIC函数调用</h3><p><img src="/images/csapp7.PNG" alt="img"></p>
+<p>需要三条指令来引用全局变量。</p>
+<p><strong>延迟绑定：</strong>将过程地址的绑定推迟到第一次调用该过程时。第一次可能开销较大，但是后续就只需要一个寄存器和一条指令就可以完成引用。GOT（.data）和PLT（.text）</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer"><div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>再接再厉-------------</div>
+    
+</div>
+          <div class="post-tags">
+              <a href="/tags/linker/" rel="tag"><i class="fa fa-tag"></i> linker</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/04/14/JIT/" rel="prev" title="ORCJIT">
+                  <i class="fa fa-angle-left"></i> ORCJIT
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/04/14/UQBT/" rel="next" title="UQBT">
+                  UQBT <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Three</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">31k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">57 分钟</span>
+  </span>
+</div>
+
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span>
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("03/01/2023 10:00:00"); //此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒.";
+    }
+setInterval("createtime()",250);
+</script>
+    </div>
+  </footer>
+  
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

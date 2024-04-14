@@ -1,11 +1,348 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>CSAPP链接</title>
+    <url>/2024/04/14/CSAPP%E9%93%BE%E6%8E%A5/</url>
+    <content><![CDATA[<p>链接是将源代码文件中的函数和全局变量等符号与其他源代码文件或库文件中的定义进行关联的过程。链接的目标是生成一个可执行文件，其中包含了所有必要的代码和数据，以便程序在运行时能够正确地执行。</p>
+<span id="more"></span>
+<h2 id="7-1-静态链接"><a href="#7-1-静态链接" class="headerlink" title="7.1 静态链接"></a>7.1 静态链接</h2><p><strong>1.符号解析：</strong>目标文定义和引用符号，为了将每个符号引用和一个符号定义关联系起来。</p>
+<p><strong>2.重定位：</strong>编译器和汇编器生成从地址零开始的代码和数据节。链接器通过把每个符号定义与一个存储器位置联系起来，然后修改所有对这些符号的引用，使得他们指向这个存储器位置，从而重定位这些节。</p>
+<p>（目标文件纯粹是字节块的集合，包含代码，数据，其他包含指导链接器和加载器的数据结构）</p>
+<h2 id="7-2-目标文件"><a href="#7-2-目标文件" class="headerlink" title="7.2 目标文件"></a>7.2 目标文件</h2><p><strong>1.可重定位目标文件：</strong>二进制代码与数据，编译时与其他可重定位文件合并起来创建一个可执行目标文件。</p>
+<p><strong>2.可执行目标文件：</strong>二进制代码和数据，可以直接拷贝到存储器进行执行。</p>
+<p><strong>3.共享目标文件：</strong>特殊形式的可重定位文件，可以在加载或者运行时被动态加载到存储器并链接。</p>
+<p>编译器和汇编器生成可重定位目标文件（包括共享文件），而链接器生成可执行文件。</p>
+<p>分清目标模块与目标文件：字节序列—-存在磁盘文件中的目标模块。</p>
+<h2 id="7-3-可重定位文件"><a href="#7-3-可重定位文件" class="headerlink" title="7.3 可重定位文件"></a>7.3 可重定位文件</h2><p>其中包括 ELF 头的大小、目标文件的类型(比如，可重定位、可执行或者是共享的)、机器类型(比如，IA32)、节头部表 (section header table) 的文件偏移，以及节头部表中的表目大小和数量。</p>
+<p><img src="/images/csapp1.PNG" alt="img"></p>
+<p><strong>.text:</strong> 已编译程序的机器代码。</p>
+<p><strong>.rodata:</strong> 只读数据，printf语句中的格式串…switch判断的符号。</p>
+<p><strong>.data:</strong> 已初始化的全局C变量，而局部变量存储在栈中。</p>
+<p><strong>.bss:</strong> 未初始化的全局C变量，不占空间仅仅是一个占位符…</p>
+<p><strong>.symtab:</strong> 一个符号表 (symbol table)，存放程序中被定义和引用的函数和全局变量信息。，symtab符号表不包含局部变量的表目。</p>
+<p><strong>.rel.text:</strong> 当链接器把这个目标文件和其他文件结合时，.text 节中的许多位置都需要修改。（调用外部函数或者引用全局变量的指令都需要更改，而调用本地函数的指令则不需要），可执行文件不需要重定位信息。</p>
+<p><strong>.rel.data:</strong> 被模块定义或引用的任何全局变量的信息。</p>
+<p><strong>.debug:</strong> 一个调试符号表，其有些表目是程序中定义的局部变量和类型定义。</p>
+<p><strong>.line:</strong> 原始C 源程序中的行号和ext 节中机器指令之间的映射。</p>
+<p><strong>.strtab:</strong> 一个字符串表，其内容包括symtab 和debug 节中的符号表，以及节头部中的节名字。</p>
+<h2 id="7-4-符号和符号表"><a href="#7-4-符号和符号表" class="headerlink" title="7.4 符号和符号表"></a>7.4 符号和符号表</h2><p>链接器中有三种符号：（对于可重定位目标模块m）</p>
+<p>（一）由m定义并且能够被其他模块引用的为<strong>全局符号</strong>。</p>
+<p>（二）由其他模块定义并且被m引用的全局符号为<strong>外部符号</strong>。</p>
+<p>（三）只被m定义和引用的为<strong>本地符号</strong>。</p>
+<p>符号表不包含对应于本地非静态程序变量的任何符号，这些符号在运行过程中被栈管理。</p>
+<p>static属性的本地过程变量是不在栈中管理的，编译器在.data与.bss中为每个定义分配空间，并且在符号表中创建一个有唯一名字的本地连接器符号。</p>
+<p>符号表由编译器构造。</p>
+<h2 id="7-6-符号解析"><a href="#7-6-符号解析" class="headerlink" title="7.6 符号解析"></a>7.6 符号解析</h2><p>链接器解析符号引用的方法是将每个引用与他输入的可重定位目标文件的符号表中的一个确定的符号定义联系起来。</p>
+<p>C++与JAVA支持重载函数，因为编译器将每个唯一的方法和参数列表组合编码成一个对链接器来收唯一的名字。例如Foo:bar(int , long)编码为bar_3Fooil，类似于这种方式给予一个唯一的名字便于链接器进行分辨。</p>
+<h3 id="7-6-1-链接器如何解析多处定义的全局符号"><a href="#7-6-1-链接器如何解析多处定义的全局符号" class="headerlink" title="7.6.1 链接器如何解析多处定义的全局符号"></a>7.6.1 链接器如何解析多处定义的全局符号</h3><p>编译时期，编译器将输出每个全局符号给汇编器，而汇编器把这个信息隐含地编码在可重定位目标文件的符号表里。</p>
+<p>函数和已初始化的全局变量为强符号，未初始化的全局变量是弱符号。</p>
+<p>符号选择规则：</p>
+<p>1.不允许多个强符号。</p>
+<p>2.一个强符号和多个弱符号，选择强符号。</p>
+<p>3.多个弱符号，随机选择。</p>
+<h3 id="7-6-2-与静态库链接"><a href="#7-6-2-与静态库链接" class="headerlink" title="7.6.2 与静态库链接"></a>7.6.2 与静态库链接</h3><p>将所有线管的目标模块打包为一个单独的文件，称为静态库，它可以用作链接器的输入。</p>
+<p>为了避免每次都需要编译整个标准函数集合，我们会对将相关函数被编译成独立的目标模块，然后封装为一个单独的静态库文件。</p>
+<p>Unix系统中，静态库以存档（archive）的特殊文件格式存放在磁盘中。</p>
+<h3 id="7-6-3-链接器如何使用静态库来解析引用"><a href="#7-6-3-链接器如何使用静态库来解析引用" class="headerlink" title="7.6.3 链接器如何使用静态库来解析引用"></a>7.6.3 链接器如何使用静态库来解析引用</h3><p>在符号解析阶段，链接器从左到右按照它们在编译器驱动程序命令行上出现的相同顺序来扫描可重定位目标文件和存档文件。链接器在扫描中会维持一个可重定位目标文件的集合E，这个集合中的文件会被合并起来形成可秩序文件，和一个为解析的符号（引用了但是尚未定义的符号）集合U，以及一个在前面输入文件中已定义的符号集合D。初始E、U和D全是空的。</p>
+<p>1.对于命令行上的每个输入文件f，链接器会判断f是一个目标文件还是一个存档文件（archive）如果f是一个目标文件则将其添加到E，修改E和D来反映f中的符号定义和引用，再继续下一个输入文件。</p>
+<p>2.如果f是一个存档文件，那么链接器就尝试匹配U中未解析的符号和由存档文件成员定义的符号。如果某个存档文件成员m，定义了一个符号来解析U中的一个引用，那么就将m加到E中，并且链接器修改U和D来反映m中的符号定义和引用。对于存档文件中所有的成员目标文件都反复进行这个过程，直到U和D都不再发生变化。此时，任何不包含在E中的成员目标文件都被丢弃，而链接器将继续到下一个输入文件。</p>
+<p>3.当链接器完成对命令行上输入文件的扫描之后，U是非空的，那么链接器就会输出一个错误并且终止。否则，他会合并和重定位E中的目标文件，从而构建输出的可执行文件。</p>
+<p>！！！如果符号的定义出现在引用这个符号的目标文件之前，那么就无法被解析。（库一般放末尾，若不是相互独立需要考虑先后顺序关系）</p>
+<h2 id="7-7-重定位"><a href="#7-7-重定位" class="headerlink" title="7.7 重定位"></a>7.7 重定位</h2><p>重定义分为两步：</p>
+<p><strong>重定位节和符号定义。</strong>在这一步中，<strong>链接器将所有相同类型的节合并为同一类型的新的聚合节。</strong>例如，来自输入模块的.data 节被全部合并成一个节，这个节成为输出的可执行目标文件的.data 节。然后，链接器将运行时存储器地址赋给新的聚合节，赋给输入模块定义的每个节，以及赋给输入模块定义的每个符号。当这一步完成时，<strong>程序中的每个<strong><strong>指令</strong></strong>和全局变量都有惟一的运行时存储器地址了。</strong> <strong>2.重定位节中的符号引用。</strong>在这一步中，<strong>链接器修改代码节和数据节中对每个符号的引用</strong>，使得它们指向正确的运行时地址。为了执行这一步，链接器依赖于称为<strong>重定位表目 (relocation entry)的可重定位目标模块中的数据结构</strong>，我们接下来将会描述这种数据结构。</p>
+<h3 id="7-7-1重定义表目"><a href="#7-7-1重定义表目" class="headerlink" title="7.7.1重定义表目"></a>7.7.1重定义表目</h3><p>未知数据和代码将会存放在存储器的什么位置，无论合适汇编器遇到对最终位置未知的目标引用，他就会生成一个重定位表目，告诉链接器在将目标文件合并成可执行文件时如何修改这个引用。</p>
+<p>ELF 重定位表目的格式offset 是需要被修改的引用的节偏移。symbol 标识被修改引用应该指向的符号。type 告知链接器如何修改新的引用。</p>
+<p><img src="/images/csapp2.PNG" alt="img"></p>
+<h3 id="7-7-2-重定位符号引用"><a href="#7-7-2-重定位符号引用" class="headerlink" title="7.7.2 重定位符号引用"></a>7.7.2 重定位符号引用</h3><p>如何引用，偏移，绝对路径等算法进行引用</p>
+<h2 id="7-8-可执行目标文件"><a href="#7-8-可执行目标文件" class="headerlink" title="7.8 可执行目标文件"></a>7.8 可执行目标文件</h2><p>可执行文件已经完全链接的（已经被重定位），所以他就不需要.relo节。</p>
+<p><img src="/images/csapp3.PNG" alt="img"></p>
+<h2 id="7-9-加载可执行目标文件"><a href="#7-9-加载可执行目标文件" class="headerlink" title="7.9 加载可执行目标文件"></a>7.9 加载可执行目标文件</h2><p>通过调用某个驻留在存储器中称为加载器的操作系统代码来为我们运行可执行文件。加载器将可执行目标文件中的代码和数据从磁盘拷贝到存储器中，然后通过跳转到程序的第 1 条指令，即入口点 (entry point)，来运行该程序。这个将程序拷贝到存储器并运行的过程叫做加载 (Ioading)。</p>
+<p>在可执行文件中段头表的指导下，加载器将可执行文件的相关内容拷贝到代码和数据段。接下来，加载器跳转到程序的入口点，也就是符号<em>start 的地址。在</em>start 地址处的启动代码（ startup code)是在目标文件ctrl.o中定义的，对所有的C程序都是一样的。展示了启动代码中特殊的调用序列。在从text 和init 节中调用了初始化例程后，启动代码调用atexit 例程，这个程序附加了一系列在应用调用exit 函数时应该调用的程序exit 函数运行 atexit 注册的函数，然后通过调用exit 将控制返回给操作系统。接着，启动代码调用应用程序的 main 程序，这就开始执行我们的C代码了。在应用程序返回之后，启动代码调用exit程序，它将控制返回给操作系统。</p>
+<p><img src="/images/csapp4.PNG" alt="img"></p>
+<h2 id="7-10-动态链接共享库"><a href="#7-10-动态链接共享库" class="headerlink" title="7.10 动态链接共享库"></a>7.10 动态链接共享库</h2><p>共享库是一个目标模块，在运行时，可以加载到任意的存储器地址，并在存储器中和一个程序链接起来。这个过程称为动态链接 (dynamic linking)，是由一个叫做动态链接器 (dynamic linker)的程序来执行的。</p>
+<p>（一）所有引用该库的可执行目标文件共享这个.so文件中的代码和数据，而不是像静态库的内容那样直接被拷贝和嵌入到引用他们的可执行文件中。（二）一个共享库的.text节只有一个副本可以被不同的正在运行的进程共享。（不会拷贝任何数据和代码到可执行文件中，链接器仅仅拷贝了一些重定位和符号表信息）.interp节中包含动态链接器的路径名，动态链接器本身就是一个共享目标。</p>
+<p><img src="/images/csapp5.PNG" alt="img"></p>
+<h2 id="7-12-与位置无关的代码（PIC）"><a href="#7-12-与位置无关的代码（PIC）" class="headerlink" title="7.12 与位置无关的代码（PIC）"></a>7.12 与位置无关的代码（PIC）</h2><p>一种方法是给每个共享库分配一个事先预备的专用的地址空间组块 (chunk)，然后要求加载器总是在这个地址加载共享库。首先，它对地址空间的使用效率不高，因为即使一个进程不使用这个库，那部分空间还是会被分配出来。第二，它也难以管理。我们将不得不保证没有组块会重叠。每次当一个库修改了之后，我们必须确认它的已分配的组块还适合它的大小。如果不适合了，我们必须找一个新的组块。并且，如果我们创建了一个新的库，我们还必须为它寻找空间。</p>
+<p>以更好地方法就是编译库代码，使得不需要链接器修改库代码，就可以在任何地址加载和执行这些代码，称为位置无关的代码。</p>
+<h3 id="7-12-1-PIC数据引用"><a href="#7-12-1-PIC数据引用" class="headerlink" title="7.12.1 PIC数据引用"></a>7.12.1 PIC数据引用</h3><p><img src="/images/csapp6.PNG" alt="img"></p>
+<p>需要额外的五条指令来引用全局变量。</p>
+<p>无论我们在存储器中的何处加载一个目标模块（包括共享目标模块），数据段总是分配为紧随在代码段后面。</p>
+<p>编译器在数据段开始的地方创建了一个表，叫做全局偏移量表(global offsettable，GOT)。GOT 包含每个被这个目标模块引用的全局数据目标的表目。编译器还为 GOT 中每个表目生成一个重定位记录。在加载时，动态链接器会重定位 GOT 中的每个表目，使得它包含正确的绝对地址。每个引用全局数据的目标模块都有一张自己的 GOT。</p>
+<h3 id="7-12-2-PIC函数调用"><a href="#7-12-2-PIC函数调用" class="headerlink" title="7.12.2 PIC函数调用"></a>7.12.2 PIC函数调用</h3><p><img src="/images/csapp7.PNG" alt="img"></p>
+<p>需要三条指令来引用全局变量。</p>
+<p><strong>延迟绑定：</strong>将过程地址的绑定推迟到第一次调用该过程时。第一次可能开销较大，但是后续就只需要一个寄存器和一条指令就可以完成引用。GOT（.data）和PLT（.text）</p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>linker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ORCJIT</title>
+    <url>/2024/04/14/JIT/</url>
+    <content><![CDATA[<p>本文档介绍MCJIT与ORCJIT执行的内部工作原理 engine 和 RuntimeDyld 组件。它旨在作为一个高层次实现概述，显示流程和交互对象贯穿整个代码生成和动态加载过程。</p>
+<span id="more"></span>
+<ol>
+<li><h1 id="MCJIT-Design-and-Implementation"><a href="#MCJIT-Design-and-Implementation" class="headerlink" title="MCJIT Design and Implementation"></a>MCJIT Design and Implementation</h1></li>
+</ol>
+<p>通过官方文档对<a href="https://llvm.org/docs/MCJITDesignAndImplementation.html">MCJIT</a>的设计与实施进行理解。</p>
+<h2 id="1-1-MCJIT-execution-engine"><a href="#1-1-MCJIT-execution-engine" class="headerlink" title="1.1 MCJIT execution engine"></a>1.1 MCJIT execution engine</h2><p>EngineBuilder 通常是用来创建MCJIT的执行引擎<strong>（关键？）</strong>，将Module作为参数传入constructor中。然后，客户端可以设置我们控制的各种选项，然后将其传递给 MCJIT 引擎，包括选择 MCJIT 作为要创建的引擎类型。</p>
+<p>EngineBuilder::setMCJITMemoryManager：如果客户端此时没有显式创建内存管理器，那么在实例化 MCJIT 引擎时将会创建一个默认的内存管理器（具体为SectionMemoryManager）。</p>
+<p>将根据与用于创建EngineBuilder的模块关联的target triple创建一个新的Target Machine。</p>
+<p><img src="/images/mcjit1.PNG" alt="img"></p>
+<p>EngineBuilder::create 将调用静态 MCJIT::createJIT 函数，将其指针传递给模块、内存管理器和目标机器对象，所有这些随后都将归 MCJIT 对象所有。</p>
+<p>MCJIT 类有一个成员变量 Dyld，它包含 RuntimeDyld 包装类的实例。此成员将用于 MCJIT 和加载对象时创建的实际 RuntimeDyldImpl 对象之间的通信。</p>
+<p>创建后，MCJIT 持有一个指向从 EngineBuilder 接收的 Module 对象的指针，但它不会立即生成该模块的代码。代码生成会被推迟，直到显式调用 MCJIT::finalizeObject 方法或调用需要生成代码的函数（例如 MCJIT::getPointerToFunction）。</p>
+<p><img src="/images/mcjit2.PNG" alt="img"></p>
+<h2 id="1-2-Code-Generation"><a href="#1-2-Code-Generation" class="headerlink" title="1.2 Code Generation"></a>1.2 Code Generation</h2><p>当code generation被触发时，如上所述，MCJIT 将首先尝试从其 ObjectCache 成员中检索对象映像(object image)（如果已设置）。如果无法检索缓存的object image，MCJIT将调用其emitObject方法。MCJIT::emitObject 使用本地 PassManager 实例并创建一个新的 ObjectBufferStream 实例，在对创建它的模块调用 PassManager::run 之前，将这两个实例传递给 TargetMachine::addPassesToEmitMC。</p>
+<p>PassManager::run 调用导致 MC code generation发出完整的可重定位二进制对象映像(a complete relocatable binary object image)（采用 ELF 或 MachO 格式，具体取决于目标）到ObjectBufferStream，它被刷新以完成该过程。如果正在使用 ObjectCache，则映像（image）将被传递到此处的 ObjectCache。</p>
+<p>在这点，ObjectBufferStream实例包含了这个原始object image。在代码被执行之前，必须将该image中的代码和数据部分加载到合适的内存中，必须应用重定位，并且必须完成内存许可和代码缓存失效（如果需要）**—code cache manager**。</p>
+<p><img src="/images/mcjit3.PNG" alt="img"></p>
+<h2 id="1-3-Object-Loading"><a href="#1-3-Object-Loading" class="headerlink" title="1.3 Object Loading"></a>1.3 Object Loading</h2><p>我们无论是通过code generation还是Object Cache获取Object image，它都会被传递到 RuntimeDyld 进行加载。RuntimeDyld wrapper class检查对象以确定其文件格式，并创建 RuntimeDyldELF 或 RuntimeDyldMachO（两者均派生自 RuntimeDyldImpl 基类）的实例，并调用 RuntimeDyldImpl::loadObject 方法来执行实际加载。</p>
+<p><img src="/images/mcjit4.PNG" alt="img"></p>
+<p>RuntimeDyldImpl::loadObject 首先从它接收到的 ObjectBuffer 创建一个 ObjectImage 实例。ObjectImage 包装了 ObjectFile 类，是一个辅助类，它解析二进制object image并提供对特定于格式的标头中包含的信息的访问，包括节、符号和重定位信息。</p>
+<p>然后 RuntimeDyldImpl::loadObject 迭代image中的符号。收集有关常见符号的信息以供以后使用。对于每个函数或数据符号，相关联的部分被加载到存储器中，并且符号被存储在符号表映射数据结构中。迭代完成后，将生成公共符号的部分。</p>
+<p>接下来，RuntimeDyldImpl::loadObject 迭代object image中的各个部分，并针对每个部分迭代该部分的重定位。对于每个重定位，它调用特定于格式的 processRelocationRef 方法，该方法将检查重定位并将其存储在两个数据结构之一中：基于节的重定位列表映射和外部符号重定位映射。</p>
+<p><img src="/images/mcjit5.PNG" alt="img"><br>当 RuntimeDyldImpl::loadObject 返回时，该object的所有代码和数据部分都将被加载到内存管理器分配的内存中，并且重定位信息将已准备好，但重定位尚未应用，生成的代码仍然是还没有准备好被执行。</p>
+<p>现在当 loadObject 完成时，MCJIT 引擎将立即应用重定位。然而，这不应该发生。由于代码可能是为远程目标生成的，因此应让客户端有机会在应用重定位之前重新映射节地址。可以多次应用重定位，但在要重新映射地址的情况下，第一次应用是浪费精力。</p>
+<h2 id="1-4-Address-Remapping"><a href="#1-4-Address-Remapping" class="headerlink" title="1.4 Address Remapping"></a>1.4 Address Remapping</h2><p>在生成初始代码之后和调用 FinalizeObject 之前的任何时间，客户端都可以重新映射object中section的地址。通常这样做是因为代码是为外部进程生成的，并且被映射到该进程的地址空间。客户端通过调用 MCJIT::mapSectionAddress 重新映射section地址。这应该在section内存复制到新位置之前发生。</p>
+<p>当调用 MCJIT::mapSectionAddress 时，MCJIT 会将调用传递给 RuntimeDyldImpl（通过其 Dyld 成员）。RuntimeDyldImpl 将新地址存储在内部数据结构中，但此时不更新代码，因为其他部分可能会更改。</p>
+<p>当客户端完成重新映射节地址后，它将调用 MCJIT::finalizeObject 来完成重新映射过程。</p>
+<h2 id="1-5-Final-Preparations"><a href="#1-5-Final-Preparations" class="headerlink" title="1.5 Final Preparations"></a>1.5 Final Preparations</h2><p>当调用 MCJIT::finalizeObject 时，MCJIT 调用 RuntimeDyld::resolveRelocations。此函数将尝试定位任何外部符号，然后应用该对象的所有重定位。</p>
+<p>外部符号通过调用内存管理器的 getPointerToNamedFunction 方法来解析。内存管理器将返回目标地址空间中所请求符号的地址。 （注意，这可能不是主机进程中的有效指针。）然后，RuntimeDyld 将迭代其存储的与该符号关联的重定位列表，并调用resolveRelocation 方法，该方法通过特定于格式的实现将重定位应用于加载的节内存。</p>
+<p>接下来，RuntimeDyld::resolveRelocations 迭代节列表，并为每个节迭代已保存的重定位列表，这些重定位引用该符号并为此列表中的每个条目调用resolveRelocation。这里的重定位列表是重定位的列表，对于该重定位，与该重定位关联的符号位于与该列表关联的部分中。这些位置中的每一个都将有一个应用重定位的目标位置，该目标位置可能位于不同的部分。</p>
+<p><img src="/images/mcjit6.PNG" alt="img"></p>
+<p>如上所述应用重定位后，MCJIT 调用 RuntimeDyld::getEHFrameSection，如果返回非零结果，则将节数据传递到内存管理器的 registerEHFrames 方法。这允许内存管理器调用任何所需的特定于目标的函数，例如使用调试器注册 EH 帧信息。</p>
+<p>最后，MCJIT 调用内存管理器的 FinalizeMemory 方法。在此方法中，内存管理器将在必要时使目标代码缓存无效，并将最终权限应用于为代码和数据内存分配的内存页。</p>
+<ol>
+<li><h1 id="ORC-Design-and-Implementation"><a href="#ORC-Design-and-Implementation" class="headerlink" title="ORC Design and Implementation"></a>ORC Design and Implementation</h1></li>
+</ol>
+<p>本文档旨在提供 <a href="https://llvm.org/docs/ORCv2.html">ORC JIT API</a> 的设计和实现的高级概述。</p>
+<h2 id="2-1-features"><a href="#2-1-features" class="headerlink" title="2.1 features"></a>2.1 features</h2><p><strong>JIT-linking：</strong>ORC 提供API在运行时将可重定位目标文件（COFF、ELF、MachO）链接到目标进程。</p>
+<p><strong>LLVM</strong> <strong>IR</strong> <strong>compilation：</strong>ORC提供现成的组件（IRCompileLayer, SimpleCompiler, ConcurrentIRCompiler）来将LLVM IR加入JIT进程。</p>
+<p>**Eager and lazy compilation:**默认情况下，一旦在 JIT 会话对象 (ExecutionSession) 中查找到符号，ORC 就会对其进行编译。</p>
+<p><strong>Support for Custom Compilers and Program Representations：</strong>客户端可以为他们在 JIT 会话中定义的每个符号提供自定义编译器。当需要符号的定义时，ORC 将运行用户提供的编译器。ORC 实际上完全与语言无关：LLVM IR 没有经过特殊处理，而是通过用于自定义编译器的相同包装器机制（MaterializationUnit 类）来支持。</p>
+<p><strong>Concurrent</strong> <strong>JIT****’d code</strong> and <strong>Concurrent Compilation：</strong>JIT 代码可以在多个线程中执行，可以产生新线程，并且可以从多个线程同时重新进入 ORC（例如，请求延迟编译）。我的 ORC 启动的编译器可以同时运行（前提是客户端设置了适当的调度程序）。内置依赖项跟踪可确保 ORC 不会释放指向 JIT 代码或数据的指针，直到所有依赖项也都已进行 JIT 且可以安全调用或使用。</p>
+<p><strong>Removable Code：</strong>JIT 程序表示的资源</p>
+<p><strong>Orthogonality</strong> and <strong>Composability：</strong>上述每个功能都可以独立使用。可以将 ORC 组件组合在一起，形成non-lazy, in-process, single threaded JIT或a lazy, out-of-process, concurrent JIT，或介于两者之间的任何形式。</p>
+<h2 id="2-2-LLJIT-and-LLLazyJIT"><a href="#2-2-LLJIT-and-LLLazyJIT" class="headerlink" title="2.2 LLJIT and LLLazyJIT"></a>2.2 LLJIT and LLLazyJIT</h2><p>ORC 提供了两个现成的基本 JIT 类。它们既可以作为如何组装 ORC 组件来生成 JIT 的示例，也可以作为早期 LLVM JIT API（例如 MCJIT）的替代品。</p>
+<p>LLJIT 类使用 IRCompileLayer 和 RTDyldObjectLinkingLayer 来支持 LLVM IR 的编译和可重定位目标文件的链接。所有操作都在symbol lookup时立即地执行（即，一旦您尝试查找其地址，就会编译symbol的定义）。在大多数情况下，LLJIT 是 MCJIT 的合适替代品（注意：尚不支持一些更高级的功能，例如 JITEventListener）。</p>
+<p>LLLazyJIT 扩展了 LLJIT 并添加了 CompileOnDemandLayer 以启用 LLVM IR 的延迟编译。当通过 addLazyIRModule 方法添加 LLVM IR 模块时，该模块中的函数体在首次调用之前不会被编译。LLLazyJIT 旨在提供 LLVM 原始（MCJIT 之前）JIT API 的替代品。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Try to detect the host arch and construct an LLJIT instance.</span></span><br><span class="line"><span class="keyword">auto</span> JIT = <span class="built_in">LLJITBuilder</span>().<span class="built_in">create</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// If we could not construct an instance, return an error.</span></span><br><span class="line"><span class="keyword">if</span> (!JIT)</span><br><span class="line">  <span class="keyword">return</span> JIT.<span class="built_in">takeError</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Add the module.ThreadSafeContext load Module</span></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">auto</span> Err = JIT-&gt;<span class="built_in">addIRModule</span>(<span class="built_in">TheadSafeModule</span>(std::<span class="built_in">move</span>(M), Ctx)))</span><br><span class="line">  <span class="keyword">return</span> Err;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Look up the JIT&#x27;d code entry point.</span></span><br><span class="line"><span class="comment">// trigger for compilation</span></span><br><span class="line"><span class="keyword">auto</span> EntrySym = JIT-&gt;<span class="built_in">lookup</span>(<span class="string">&quot;entry&quot;</span>);</span><br><span class="line"><span class="keyword">if</span> (!EntrySym)</span><br><span class="line">  <span class="keyword">return</span> EntrySym.<span class="built_in">takeError</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Cast the entry point address to a function pointer.</span></span><br><span class="line"><span class="keyword">auto</span> *Entry = EntrySym.<span class="built_in">getAddress</span>().<span class="built_in">toPtr</span>&lt;<span class="built_in">void</span>(*)()&gt;();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Call into JIT&#x27;d code.</span></span><br><span class="line"><span class="built_in">Entry</span>();</span><br></pre></td></tr></table></figure>
+
+<p>构建器类提供了许多可以在构造 JIT 实例之前指定的配置选项。允许我们构造许多不同种的JIT。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// LLVM_LIB_EXECUTIONENGINE_MCJIT_MCJIT_H</span></span><br><span class="line"><span class="comment">// Build an LLLazyJIT instance that uses four worker threads for compilation,</span></span><br><span class="line"><span class="comment">// and jumps to a specific error handler (rather than null) on lazy compile</span></span><br><span class="line"><span class="comment">// failures.</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">handleLazyCompileFailure</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="comment">// JIT&#x27;d code will jump here if lazy compilation fails, giving us an</span></span><br><span class="line">  <span class="comment">// opportunity to exit or throw an exception into JIT&#x27;d code.</span></span><br><span class="line">  <span class="keyword">throw</span> <span class="built_in">JITFailed</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> JIT = <span class="built_in">LLLazyJITBuilder</span>()</span><br><span class="line">             .<span class="built_in">setNumCompileThreads</span>(<span class="number">4</span>)</span><br><span class="line">             .<span class="built_in">setLazyCompileFailureAddr</span>(</span><br><span class="line">                 ExecutorAddr::<span class="built_in">fromPtr</span>(&amp;handleLazyCompileFailure))</span><br><span class="line">             .<span class="built_in">create</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// ...</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-3-Design-Overview"><a href="#2-3-Design-Overview" class="headerlink" title="2.3 Design Overview"></a>2.3 Design Overview</h2><p><strong>ORC 的</strong> <strong>JIT</strong> <strong>程序模型旨在模拟静态和动态链接器使用的链接和符号解析规则。</strong>这允许 ORC JIT 任意 LLVM IR，包括由普通静态编译器（例如 clang）生成的 IR，该编译器使用symbol链接和可见性等构造，以及weak和common symbol定义。</p>
+<p>要了解其工作原理，请想象一个程序 foo 链接到一对动态库：libA 和 libB。在命令行上，构建该程序可能如下所示：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">$ clang++ -shared -o libA.dylib a1.cpp a2.cpp</span><br><span class="line">$ clang++ -shared -o libB.dylib b1.cpp b2.cpp</span><br><span class="line">$ clang++ -o myapp myapp.cpp -L. -lA -lB</span><br><span class="line">$ ./myapp</span><br><span class="line">ExecutionSession ES;</span><br><span class="line"><span class="function">RTDyldObjectLinkingLayer <span class="title">ObjLinkingLayer</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    ES, []() &#123; <span class="keyword">return</span> std::make_unique&lt;SectionMemoryManager&gt;(); &#125;)</span></span>;</span><br><span class="line"><span class="function">CXXCompileLayer <span class="title">CXXLayer</span><span class="params">(ES, ObjLinkingLayer)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Create JITDylib &quot;A&quot; and add code to it using the CXX layer.</span></span><br><span class="line"><span class="keyword">auto</span> &amp;LibA = ES.<span class="built_in">createJITDylib</span>(<span class="string">&quot;A&quot;</span>);</span><br><span class="line">CXXLayer.<span class="built_in">add</span>(LibA, MemoryBuffer::<span class="built_in">getFile</span>(<span class="string">&quot;a1.cpp&quot;</span>));</span><br><span class="line">CXXLayer.<span class="built_in">add</span>(LibA, MemoryBuffer::<span class="built_in">getFile</span>(<span class="string">&quot;a2.cpp&quot;</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">// Create JITDylib &quot;B&quot; and add code to it using the CXX layer.</span></span><br><span class="line"><span class="keyword">auto</span> &amp;LibB = ES.<span class="built_in">createJITDylib</span>(<span class="string">&quot;B&quot;</span>);</span><br><span class="line">CXXLayer.<span class="built_in">add</span>(LibB, MemoryBuffer::<span class="built_in">getFile</span>(<span class="string">&quot;b1.cpp&quot;</span>));</span><br><span class="line">CXXLayer.<span class="built_in">add</span>(LibB, MemoryBuffer::<span class="built_in">getFile</span>(<span class="string">&quot;b2.cpp&quot;</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">// Create and specify the search order for the main JITDylib. This is</span></span><br><span class="line"><span class="comment">// equivalent to a &quot;links against&quot; relationship in a command-line link.</span></span><br><span class="line"><span class="keyword">auto</span> &amp;MainJD = ES.<span class="built_in">createJITDylib</span>(<span class="string">&quot;main&quot;</span>);</span><br><span class="line">MainJD.<span class="built_in">addToLinkOrder</span>(&amp;LibA);</span><br><span class="line">MainJD.<span class="built_in">addToLinkOrder</span>(&amp;LibB);</span><br><span class="line">CXXLayer.<span class="built_in">add</span>(MainJD, MemoryBuffer::<span class="built_in">getFile</span>(<span class="string">&quot;main.cpp&quot;</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">// Look up the JIT&#x27;d main, cast it to a function pointer, then call it.</span></span><br><span class="line"><span class="keyword">auto</span> MainSym = <span class="built_in">ExitOnErr</span>(ES.<span class="built_in">lookup</span>(&#123;&amp;MainJD&#125;, <span class="string">&quot;main&quot;</span>));</span><br><span class="line"><span class="keyword">auto</span> *Main = MainSym.<span class="built_in">getAddress</span>().<span class="built_in">toPtr</span>&lt;<span class="built_in">int</span>(*)(<span class="type">int</span>, <span class="type">char</span> *[])&gt;();</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> Result = <span class="built_in">Main</span>(...);</span><br></pre></td></tr></table></figure>
+
+<p>这个例子没有告诉我们编译如何或何时发生。这将取决于假设的 CXXCompilingLayer 的实现。然而，无论该实现如何，相同的基于链接器的符号解析规则都将适用。例如，如果 a1.cpp 和 a2.cpp 都定义了函数“foo”，则 ORCv2 将生成重复定义错误。另一方面，如果a1.cpp和b1.cpp都定义了“foo”，则没有错误（不同的动态库可能定义相同的符号）。如果 main.cpp 引用“foo”，它应该绑定到 LibA 中的定义而不是 LibB 中的定义，因为 main.cpp 是“main”dylib 的一部分，并且main dylib 在 LibB 之前链接到 LibA。</p>
+<p>许多 JIT 客户端不需要严格遵守通常的ahead-of-time linking规则，并且应该能够通过将所有代码放入单个 JITDylib 中来顺利完成。然而，想要为传统上依赖ahead-of-time linking（例如 C++）的语言&#x2F;项目进行 JIT 编码的客户会发现此功能使生活变得更加轻松。</p>
+<p>除了提供符号地址之外，ORC 中的符号查找还有另外两个重要功能：**(1) 它触发所搜索符号的编译（如果尚未编译），(2)提供并发编译的同步机制。**查找过程的伪代码是：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">construct a query object from a query set <span class="keyword">and</span> query handler</span><br><span class="line">lock the session</span><br><span class="line">lodge query against requested symbols, <span class="function">collect required <span class="title">materializers</span> <span class="params">(<span class="keyword">if</span> any)</span></span></span><br><span class="line"><span class="function">unlock the session</span></span><br><span class="line"><span class="function">dispatch <span class="title">materializers</span> <span class="params">(<span class="keyword">if</span> any)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>在这种情况下，materializers 是根据请求提供符号的工作定义的东西。通常materializers只是编译器的包装器，但它们也可以直接包装 jit-linker（如果支持定义的程序表示是object文件），或者甚至可能是直接将位写入内存的类（例如，如果 定义是stubs）。<strong>materializers是生成可安全调用或访问的符号定义所需的任何操作(compiling, linking, splatting</strong> <strong>bits</strong><strong>, registering with runtimes等）的总称。</strong></p>
+<p>当每个materializer完成其工作时，它会通知 JITDylib，JITDylib又通知正在等待新的materialized definitions的任何查询对象。每个查询对象都维护着一个仍在等待的symbol数量的计数，一旦这个计数达到零，查询对象就会使用一个SymbolMap（symbol名称到地址的映射）调用查询处理程序，描述结果。如果任何符号未能materialize，查询将立即使用错误调用查询处理程序。 收集到的materialization units被发送到ExecutionSession进行调度，调度行为可以由客户端设置。默认情况下，每个materialization在调用线程上运行。客户端可以自由地创建新线程来运行materialization，或者将工作发送到线程池的工作队列（这是LLJIT&#x2F;LLLazyJIT的做法）。</p>
+<h2 id="2-4-Top-Level-APIs"><a href="#2-4-Top-Level-APIs" class="headerlink" title="2.4 Top Level APIs"></a>2.4 Top Level APIs</h2><ul>
+<li><em><strong>ExecutionSession</strong></em> 表示 JIT 程序并为 JIT 提供上下文：它包含 JITDylib、错误报告机制并调度materializers。</li>
+<li><em><strong>JITDylibs</strong></em> 提供符号表。</li>
+<li><em><strong>Layers</strong></em> (ObjLinkingLayer 和 CXXLayer)是编译器的包装器(wrappers)，允许客户端将这些编译器支持的未编译程序表示添加到 JITDylibs。</li>
+<li><strong>ResourceTrackers</strong> 允许您删除代码。</li>
+</ul>
+<p>JIT clients need not be aware of them, but Layer authors will use them:</p>
+<ul>
+<li>**MaterializationUnit:**当调用 XXXLayer::add 时，它将给定的程序表示形式（在本例中为 C++ 源代码）包装在 MaterializationUnit 中，然后存储在 JITDylib 中。MaterializationUnits 负责描述它们提供的定义，并在需要编译时解包程序表示并将其传递回层（这种所有权改变使得编写线程安全层变得更容易，因为程序表示的所有权将被传回到堆栈上，而不是必须从 Layer 成员中取出，这需要同步）。</li>
+<li>**MaterializationResponsibility:**当 MaterializationUnit 将程序表示返回层时，它会附带一个关联的 MaterializationResponsibility 对象。 该object tracks必须Materialization的定义，并提供一种在成功materialized或发生失败时通知 JITDylib 的方法。</li>
+</ul>
+<h2 id="2-5-Absolute-Symbols-Aliases-and-Reexports"><a href="#2-5-Absolute-Symbols-Aliases-and-Reexports" class="headerlink" title="2.5 Absolute Symbols, Aliases, and Reexports"></a>2.5 Absolute Symbols, Aliases, and Reexports</h2><p>ORC 可以轻松地定义具有绝对地址的符号，或者只是其他符号的别名的符号：</p>
+<h3 id="2-5-1-Absolute-Symbols"><a href="#2-5-1-Absolute-Symbols" class="headerlink" title="2.5.1 Absolute Symbols"></a>2.5.1 Absolute Symbols</h3><p>绝对符号是直接映射到地址而不需要进一步materialization的符号，例如：“foo”&#x3D; 0x1234。绝对符号的一种用例是允许解析过程符号。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">JD.<span class="built_in">define</span>(<span class="built_in">absoluteSymbols</span>(<span class="built_in">SymbolMap</span>(&#123;</span><br><span class="line">    &#123; <span class="built_in">Mangle</span>(<span class="string">&quot;printf&quot;</span>),</span><br><span class="line">      &#123; ExecutorAddr::<span class="built_in">fromPtr</span>(&amp;printf),</span><br><span class="line">        JITSymbolFlags::Callable &#125; &#125;</span><br><span class="line">  &#125;)));</span><br></pre></td></tr></table></figure>
+
+<p>通过这种映射，添加到 JIT 的已建立代码可以象征性地引用 printf，而不需要“baked in”printf 的地址。这反过来又允许 JIT 代码（例如编译对象）的缓存版本在 JIT 会话中重复使用，因为 JIT 代码不再更改，只有绝对符号定义发生更改。</p>
+<p>对于进程和库符号，DynamicLibrarySearchGenerator utility（ How to Add Process and Library Symbols to JITDylibs）可用于自动为您构建绝对符号映射。然而，absoluteSymbols 函数对于使 JIT 中的非全局对象对 JIT 代码可见仍然很有用。例如，假设您的 JIT 标准库需要访问您的 JIT 对象才能进行一些调用。我们可以将对象的地址bake到库中，但随后需要为每个会话重新编译它：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// From standard library for JIT&#x27;d code:</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyJIT</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">log</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *Msg)</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">log</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *Msg)</span> </span>&#123; ((MyJIT*)<span class="number">0x1234</span>)-&gt;<span class="built_in">log</span>(Msg); &#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以将其转换为 JIT 标准库中的符号引用：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">extern</span> MyJIT *__MyJITInstance;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">log</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *Msg)</span> </span>&#123; __MyJITInstance-&gt;<span class="built_in">log</span>(Msg); &#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后在 JIT 启动时使用绝对符号定义使我们的 JIT 对象对 JIT 标准库可见：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">MyJIT J = ...;</span><br><span class="line"><span class="keyword">auto</span> &amp;JITStdLibJD = ... ;</span><br><span class="line"></span><br><span class="line">JITStdLibJD.<span class="built_in">define</span>(<span class="built_in">absoluteSymbols</span>(<span class="built_in">SymbolMap</span>(&#123;</span><br><span class="line">    &#123; <span class="built_in">Mangle</span>(<span class="string">&quot;__MyJITInstance&quot;</span>),</span><br><span class="line">      &#123; ExecutorAddr::<span class="built_in">fromPtr</span>(&amp;J), <span class="built_in">JITSymbolFlags</span>() &#125; &#125;</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-5-2-Aliases-and-Reexports"><a href="#2-5-2-Aliases-and-Reexports" class="headerlink" title="2.5.2 Aliases and Reexports"></a>2.5.2 Aliases and Reexports</h3><p>Aliases and reexports允许您定义映射到现有符号的新符号。这对于更改跨会话的符号之间的链接关系非常有用，而无需重新编译代码。例如，假设 JIT 代码可以访问日志函数 void log(const char*)，JIT 标准库中有两个实现：log_fast 和 log_detailed。您的 JIT 可以通过在 JIT 启动时设置别名来选择在引用日志符号时使用这些定义中的哪一个:</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">auto</span> &amp;JITStdLibJD = ... ;</span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> LogImplementationSymbol =</span><br><span class="line"> Verbose ? <span class="built_in">Mangle</span>(<span class="string">&quot;log_detailed&quot;</span>) : <span class="built_in">Mangle</span>(<span class="string">&quot;log_fast&quot;</span>);</span><br><span class="line"></span><br><span class="line">JITStdLibJD.<span class="built_in">define</span>(</span><br><span class="line">  <span class="built_in">symbolAliases</span>(<span class="built_in">SymbolAliasMap</span>(&#123;</span><br><span class="line">      &#123; <span class="built_in">Mangle</span>(<span class="string">&quot;log&quot;</span>),</span><br><span class="line">        &#123; LogImplementationSymbol</span><br><span class="line">          JITSymbolFlags::Exported | JITSymbolFlags::Callable &#125; &#125;</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>symbolAliases 函数允许您在单个 JITDylib 中定义别名。 reexports 函数提供相同的功能，但跨 JITDylib 边界进行操作。例如:</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">auto</span> &amp;JD1 = ... ;</span><br><span class="line"><span class="keyword">auto</span> &amp;JD2 = ... ;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Make &#x27;bar&#x27; in JD2 an alias for &#x27;foo&#x27; from JD1.</span></span><br><span class="line">JD2.<span class="built_in">define</span>(</span><br><span class="line">  <span class="built_in">reexports</span>(JD1, <span class="built_in">SymbolAliasMap</span>(&#123;</span><br><span class="line">      &#123; <span class="built_in">Mangle</span>(<span class="string">&quot;bar&quot;</span>), &#123; <span class="built_in">Mangle</span>(<span class="string">&quot;foo&quot;</span>), JITSymbolFlags::Exported &#125; &#125;</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>eexports 实用程序可以方便地通过从其他几个 JITDylib 重新导出符号来构建单个 JITDylib 接口。</p>
+<h2 id="2-6-Laziness"><a href="#2-6-Laziness" class="headerlink" title="2.6 Laziness"></a>2.6 Laziness</h2><p>ORC 中的Laziness是由名为“lazy reexports”的实用程序提供的。Laziness重新导出类似于常规重新导出或别名：它为现有符号提供新名称。然而，与常规重新导出不同，Laziness重新导出的查找不会立即触发重新导出符号的materialization。相反，它们仅触发函数stub的materialization。该函数stub被初始化为指向lazy call-through，它提供了对 JIT 的重入。如果在运行时调用stub，则lazy call-through将查找reexported symbol（如有必要，会触发其materialization），更新stub（在后续调用中直接调用reexported symbol），然后通过reexported symbol返回。通过重用现有的symbol查找机制，lazy reexports继承了相同的并发保证。对lazy reexports的调用可以同时从多个线程进行，并且重新导出的符号可以是任何编译状态（uncompiled, already in the process of being compiled, or already compiled），并且调用将成功。这允许laziness与远程编译、并发编译、并发 JIT 代码和推测编译等功能安全地混合。</p>
+<p>一些客户必须意识到regular reexports和lazy reexports之间的另一个关键区别:lazy reexport的地址将与reexported symbol的地址不同（而regular reexport保证与reexport symbol具有相同的地址）。关心指针相等性的客户端通常希望使用reexport的地址作为reexported symbol的规范地址。这将允许在不强制materialization of the reexport的情况下获取地址</p>
+<p>如果 JITDylib JD 包含符号 foo_body 和 bar_body 的定义，我们可以通过调用以下命令在 JITDylib JD2 中创建惰性入口点 Foo 和 Bar：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">auto</span> ReexportFlags = JITSymbolFlags::Exported | JITSymbolFlags::Callable;</span><br><span class="line">JD2.<span class="built_in">define</span>(</span><br><span class="line">  <span class="built_in">lazyReexports</span>(CallThroughMgr, StubsMgr, JD,</span><br><span class="line">                <span class="built_in">SymbolAliasMap</span>(&#123;</span><br><span class="line">                  &#123; <span class="built_in">Mangle</span>(<span class="string">&quot;foo&quot;</span>), &#123; <span class="built_in">Mangle</span>(<span class="string">&quot;foo_body&quot;</span>), ReexportedFlags &#125; &#125;,</span><br><span class="line">                  &#123; <span class="built_in">Mangle</span>(<span class="string">&quot;bar&quot;</span>), &#123; <span class="built_in">Mangle</span>(<span class="string">&quot;bar_body&quot;</span>), ReexportedFlags &#125; &#125;</span><br><span class="line">                &#125;));</span><br></pre></td></tr></table></figure>
+
+<p>有关如何将lazyReexports与LLJIT类一起使用的完整示例可以在llvm&#x2F;examples&#x2F;OrcV2Examples&#x2F;LLJITWithLazyReexports中找到。</p>
+<h2 id="2-7-Transitioning-from-ORCv1-to-ORCv2"><a href="#2-7-Transitioning-from-ORCv1-to-ORCv2" class="headerlink" title="2.7 Transitioning from ORCv1 to ORCv2"></a>2.7 Transitioning from ORCv1 to ORCv2</h2><p>自 LLVM 7.0 以来，新的 ORC 开发工作重点是添加对并发 JIT 编译的支持。 支持并发的新 API（包括新层接口和实现以及新实用程序）统称为 ORCv2，而原始的非并发层和实用程序现在称为 ORCv1。</p>
+<p>ORCv1 和 ORCv2 之间存在一些需要注意的设计差异：</p>
+<ol>
+<li>ORCv2 完全采用从 MCJIT 开始的 JIT-as-linker 模型。 模块（和其他程序表示形式，例如Object Files）不再直接添加到 JIT 类或层。 相反，它们按层添加到 JITDylib 实例中。 JITDylib 确定定义所在的位置，层确定定义的编译方式。 JITDylib 之间的链接关系决定了如何解析模块间引用，并且不再使用符号解析器。<ol>
+<li>除非需要多个 JITDylib 来建立链接关系，否则 ORCv1 客户端应将所有代码放在单个 JITDylib 中。MCJIT 客户端应使用 LLJIT（请参阅 LLJIT 和 LLLazyJIT），并且可以将代码放置在 LLJIT 默认创建的主 JITDylib 中（请参阅 LLJIT::getMainJITDylib()）。</li>
+</ol>
+</li>
+<li>所有 JIT 堆栈现在都需要一个 ExecutionSession 实例。 ExecutionSession 管理字符串池、错误报告、同步和符号查找。</li>
+<li>ORCv2 使用唯一字符串（SymbolStringPtr 实例）而不是字符串值，以减少内存开销并提高查找性能。</li>
+<li>IR 层需要 ThreadSafeModule 实例，而不是 std::unique_ptr<Module>。 ThreadSafeModule 是一个包装器，可确保使用相同 LLVMContext 的模块不会同时访问。</li>
+<li>Symbol查找不再由层处理。相反，JITDylib 上有一个lookup方法，它需要扫描 JITDylib 列表。</li>
+<li>removeModule&#x2F;removeObject 方法被 ResourceTracker::remove 取代。</li>
+</ol>
+<h2 id="2-8-How-tos"><a href="#2-8-How-tos" class="headerlink" title="2.8 How-tos"></a>2.8 How-tos</h2><h3 id="2-8-1-How-to-manage-symbol-strings"><a href="#2-8-1-How-to-manage-symbol-strings" class="headerlink" title="2.8.1 How to manage symbol strings"></a>2.8.1 How to manage symbol strings</h3><p>ORC 中的符号字符串具有独特的功能，可以提高查找性能、减少内存开销，并允许符号名称充当有效的键。要获取字符串值的唯一 SymbolStringPtr，请调用 ExecutionSession::intern 方法：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">ExecutionSession ES;</span><br><span class="line"><span class="comment">/// ...</span></span><br><span class="line"><span class="keyword">auto</span> MainSymbolName = ES.<span class="built_in">intern</span>(<span class="string">&quot;main&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>如果您希望使用符号的 C&#x2F;IR 名称执行查找，您还需要在驻留字符串之前应用平台链接器修饰。在 Linux 上，这种修改是无操作的，但在其他平台上，它通常涉及向字符串添加前缀（例如 Darwin 上的“_”）。修饰方案基于目标的 DataLayout。给定一个 DataLayout 和一个 ExecutionSession，您可以创建一个 MangleAndInterner 函数对象来为您执行这两项工作：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">ExecutionSession ES;</span><br><span class="line"><span class="type">const</span> DataLayout &amp;DL = ...;</span><br><span class="line"><span class="function">MangleAndInterner <span class="title">Mangle</span><span class="params">(ES, DL)</span></span>;</span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="comment">// Portable IR-symbol-name lookup:</span></span><br><span class="line"><span class="keyword">auto</span> Sym = ES.<span class="built_in">lookup</span>(&#123;&amp;MainJD&#125;, <span class="built_in">Mangle</span>(<span class="string">&quot;main&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-8-2-How-to-create-JITDylibs-and-set-up-linkage-relationships"><a href="#2-8-2-How-to-create-JITDylibs-and-set-up-linkage-relationships" class="headerlink" title="2.8.2 How to create JITDylibs and set up linkage relationships"></a>2.8.2 How to create JITDylibs and set up linkage relationships</h3><p>在 ORC 中，所有符号定义都驻留在 JITDylib 中。 JITDylib 是通过调用具有唯一名称的 ExecutionSession::createJITDylib 方法来创建的：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">ExecutionSession ES;</span><br><span class="line"><span class="keyword">auto</span> &amp;JD = ES.<span class="built_in">createJITDylib</span>(<span class="string">&quot;libFoo.dylib&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>JITDylib 由 ExecutionEngine 实例拥有，并在销毁时被释放。</p>
+<h3 id="2-8-3-How-to-remove-code"><a href="#2-8-3-How-to-remove-code" class="headerlink" title="2.8.3 How to remove code"></a>2.8.3 How to remove code</h3><p>要从 JITDylib 中删除单个模块，必须首先使用显式 ResourceTracker 添加该模块。然后可以通过调用 ResourceTracker::remove 来删除该模块：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">auto</span> &amp;JD = ... ;</span><br><span class="line"><span class="keyword">auto</span> M = ... ;</span><br><span class="line"><span class="keyword">auto</span> RT = JD.<span class="built_in">createResourceTracker</span>();</span><br><span class="line">Layer.<span class="built_in">add</span>(RT, std::<span class="built_in">move</span>(M)); </span><br><span class="line"><span class="comment">// Add M to JD, tracking resources with RT</span></span><br><span class="line">RT.<span class="built_in">remove</span>(); <span class="comment">// Remove M from JD.</span></span><br></pre></td></tr></table></figure>
+
+<p>直接添加到 JITDylib 的模块将由 JITDylib 的默认resource tracker追踪。</p>
+<p>可以通过调用 JITDylib::clear 从 JITDylib 中删除所有代码。这会使清除的 JITDylib 处于空但可用的状态。</p>
+<p>可以通过调用 ExecutionSession::removeJITDylib 来删除 JITDylib。这会清除 JITDylib，然后将其置于失效状态。无法对 JITDylib 执行进一步的操作，并且一旦释放其最后一个句柄，它将被销毁。</p>
+<p>有关如何使用资源管理 API 的示例可以在 llvm&#x2F;examples&#x2F;OrcV2Examples&#x2F;LLJITRemovableCode 中找到。</p>
+<h3 id="2-8-4-How-to-add-the-support-for-custom-program-representation"><a href="#2-8-4-How-to-add-the-support-for-custom-program-representation" class="headerlink" title="2.8.4 How to add the support for custom program representation"></a>2.8.4 How to add the support for custom program representation</h3><p>为了添加对自定义程序表示的支持，需要用于程序表示的自定义 MaterializationUnit 和自定义层。该层将有两个操作：添加和发出。添加操作获取程序表示的一个实例，构建一个自定义的 MaterializationUnit 来保存它，然后将其添加到 JITDylib。出操作采用 MaterializationResponsibility 对象和程序表示的实例并将其materializes，通常是通过编译它并将生成的object传递给 ObjectLinkingLayer。</p>
+<p>您的自定义 MaterializationUnit 将有两个操作：materialize 和 discard 。当查找unit提供的任何符号时，将调用materialize函数，并且它应该只调用层上的emit函数，传入给定的MaterializationResponsibility和wrapped program表示。如果不需要您的单元提供的某些weak symbol（因为 JIT 找到了重写定义），则将调用丢弃函数。您可以使用它来提前删除定义，或者直接忽略它并让链接器稍后删除定义。</p>
+<p>下面是一个 ASLayer 的示例：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// ... In you JIT class</span></span><br><span class="line">AstLayer astLayer;</span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AstMaterializationUnit</span> : <span class="keyword">public</span> orc::MaterializationUnit &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">AstMaterializationUnit</span>(AstLayer &amp;l, Ast &amp;ast)</span><br><span class="line">  : llvm::orc::<span class="built_in">MaterializationUnit</span>(l.<span class="built_in">getInterface</span>(ast)), <span class="built_in">astLayer</span>(l),</span><br><span class="line">  <span class="built_in">ast</span>(ast) &#123;&#125;;</span><br><span class="line"></span><br><span class="line">  <span class="function">llvm::StringRef <span class="title">getName</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;AstMaterializationUnit&quot;</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">materialize</span><span class="params">(std::unique_ptr&lt;orc::MaterializationResponsibility&gt; r)</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    astLayer.<span class="built_in">emit</span>(std::<span class="built_in">move</span>(r), ast);</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">discard</span><span class="params">(<span class="type">const</span> llvm::orc::JITDylib &amp;jd, <span class="type">const</span> llvm::orc::SymbolStringPtr &amp;sym)</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">    <span class="built_in">llvm_unreachable</span>(<span class="string">&quot;functions are not overridable&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  AstLayer &amp;astLayer;</span><br><span class="line">  Ast &amp;ast;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AstLayer</span> &#123;</span><br><span class="line">  llvhm::orc::IRLayer &amp;baseLayer;</span><br><span class="line">  llvhm::orc::MangleAndInterner &amp;mangler;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">AstLayer</span>(llvm::orc::IRLayer &amp;baseLayer, llvm::orc::MangleAndInterner &amp;mangler)</span><br><span class="line">  : <span class="built_in">baseLayer</span>(baseLayer), <span class="built_in">mangler</span>(mangler)&#123;&#125;;</span><br><span class="line"></span><br><span class="line">  <span class="function">llvm::Error <span class="title">add</span><span class="params">(llvm::orc::ResourceTrackerSP &amp;rt, Ast &amp;ast)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> rt-&gt;<span class="built_in">getJITDylib</span>().<span class="built_in">define</span>(std::<span class="built_in">make_unique</span>&lt;AstMaterializationUnit&gt;(*<span class="keyword">this</span>, ast), rt);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">emit</span><span class="params">(std::unique_ptr&lt;orc::MaterializationResponsibility&gt; mr, Ast &amp;ast)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// compileAst is just function that compiles the given AST and returns</span></span><br><span class="line">    <span class="comment">// a `llvm::orc::ThreadSafeModule`</span></span><br><span class="line">    baseLayer.<span class="built_in">emit</span>(std::<span class="built_in">move</span>(mr), <span class="built_in">compileAst</span>(ast));</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  llvm::orc::<span class="function">MaterializationUnit::Interface <span class="title">getInterface</span><span class="params">(Ast &amp;ast)</span> </span>&#123;</span><br><span class="line">      SymbolFlagsMap Symbols;</span><br><span class="line">      <span class="comment">// Find all the symbols in the AST and for each of them</span></span><br><span class="line">      <span class="comment">// add it to the Symbols map.</span></span><br><span class="line">      Symbols[<span class="built_in">mangler</span>(someNameFromAST)] =</span><br><span class="line">        <span class="built_in">JITSymbolFlags</span>(JITSymbolFlags::Exported | JITSymbolFlags::Callable);</span><br><span class="line">      <span class="keyword">return</span> MaterializationUnit::<span class="built_in">Interface</span>(std::<span class="built_in">move</span>(Symbols), <span class="literal">nullptr</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-8-5-How-to-use-ThreadSafeModule-and-ThreadSafeContext"><a href="#2-8-5-How-to-use-ThreadSafeModule-and-ThreadSafeContext" class="headerlink" title="2.8.5 How to use ThreadSafeModule and ThreadSafeContext"></a>2.8.5 How to use ThreadSafeModule and ThreadSafeContext</h3><p>ThreadSafeModule 和 ThreadSafeContext 分别是Module和 LLVMContext 的wrappers。ThreadSafeModule 是一对 std::unique_ptr<Module> 和一个（可能共享的）ThreadSafeContext 值。ThreadSafeContext 是一对 std::unique_ptr<LLVMContext> 和一个锁。此设计有两个目的：为 LLVMContext 提供锁定方案和生命周期管理。ThreadSafeContext 可以被锁定，以防止使用相同 LLVMContext 的两个模块意外并发访问。一旦指向它的所有 ThreadSafeContext 值都被销毁，底层 LLVMContext 就会被释放，从而允许在引用它的模块被销毁后立即回收上下文内存。</p>
+<p>ThreadSafeContexts 可以从 std::unique_ptr<LLVMContext> 显式构造：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">ThreadSafeContext <span class="title">TSCtx</span><span class="params">(std::make_unique&lt;LLVMContext&gt;())</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>ThreadSafeModule 可以由一对 std::unique_ptr<Module> 和 ThreadSafeContext 值构造。 ThreadSafeContext 值可以在多个 ThreadSafeModule 之间共享：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">ThreadSafeModule <span class="title">TSM1</span><span class="params">(  std::make_unique&lt;Module&gt;(<span class="string">&quot;M1&quot;</span>, *TSCtx.getContext()), TSCtx)</span></span>;</span><br><span class="line"><span class="function">ThreadSafeModule <span class="title">TSM2</span><span class="params">(  std::make_unique&lt;Module&gt;(<span class="string">&quot;M2&quot;</span>, *TSCtx.getContext()), TSCtx)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>在使用 ThreadSafeContext 之前，客户端应确保上下文只能在当前线程上访问，或者上下文已锁定。 在上面的示例中（上下文从未锁定），我们依赖于 TSM1 和 TSM2 以及 TSCtx 均在一个线程上创建这一事实。 如果要在线程之间共享上下文，则必须在访问或创建附加到它的任何模块之前将其锁定。 例如。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">ThreadSafeContext <span class="title">TSCtx</span><span class="params">(std::make_unique&lt;LLVMContext&gt;())</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function">ThreadPool <span class="title">TP</span><span class="params">(NumThreads)</span></span>;</span><br><span class="line">JITStack J;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">auto</span> &amp;ModulePath : ModulePaths) &#123;</span><br><span class="line">  TP.<span class="built_in">async</span>(</span><br><span class="line">    [&amp;]() &#123;</span><br><span class="line">      <span class="keyword">auto</span> Lock = TSCtx.<span class="built_in">getLock</span>();</span><br><span class="line">      <span class="keyword">auto</span> M = <span class="built_in">loadModuleOnContext</span>(ModulePath, TSCtx.<span class="built_in">getContext</span>());</span><br><span class="line">      J.<span class="built_in">addModule</span>(<span class="built_in">ThreadSafeModule</span>(std::<span class="built_in">move</span>(M), TSCtx));</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">TP.<span class="built_in">wait</span>();</span><br></pre></td></tr></table></figure>
+
+<p>为了使对模块的独占访问更易于管理，ThreadSafeModule 类提供了一个方便的函数 withModuleDo，它隐式地 (1) 锁定关联的上下文，(2) 运行给定的函数对象，(3) 解锁上下文，以及 (3) 返回 函数对象生成的结果。 例如。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">ThreadSafeModule TSM = <span class="built_in">getModule</span>(...);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Dump the module:</span></span><br><span class="line"><span class="type">size_t</span> NumFunctionsInModule =</span><br><span class="line">  TSM.<span class="built_in">withModuleDo</span>(</span><br><span class="line">    [](Module &amp;M) &#123; <span class="comment">// &lt;- Context locked before entering lambda.</span></span><br><span class="line">      <span class="keyword">return</span> M.<span class="built_in">size</span>();</span><br><span class="line">    &#125; <span class="comment">// &lt;- Context unlocked after leaving.</span></span><br><span class="line">  );</span><br></pre></td></tr></table></figure>
+
+<p>希望最大限度地提高并发编译可能性的客户将希望在新的 ThreadSafeContext 上创建每个新的 ThreadSafeModule。 因此，提供了 ThreadSafeModule 的便捷构造函数，它从 std::unique_ptr<LLVMContext> 隐式构造新的 ThreadSafeContext 值：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Maximize concurrency opportunities by loading every module on a</span></span><br><span class="line"><span class="comment">// separate context.</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">const</span> <span class="keyword">auto</span> &amp;IRPath : IRPaths) &#123;</span><br><span class="line">  <span class="keyword">auto</span> Ctx = std::<span class="built_in">make_unique</span>&lt;LLVMContext&gt;();</span><br><span class="line">  <span class="keyword">auto</span> M = std::<span class="built_in">make_unique</span>&lt;LLVMContext&gt;(<span class="string">&quot;M&quot;</span>, *Ctx);</span><br><span class="line">  CompileLayer.<span class="built_in">add</span>(MainJD, <span class="built_in">ThreadSafeModule</span>(std::<span class="built_in">move</span>(M), std::<span class="built_in">move</span>(Ctx)));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>计划运行单线程的客户端可以选择通过在同一上下文中加载所有模块来节省内存：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Save memory by using one context for all Modules:</span></span><br><span class="line"><span class="function">ThreadSafeContext <span class="title">TSCtx</span><span class="params">(std::make_unique&lt;LLVMContext&gt;())</span></span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="type">const</span> <span class="keyword">auto</span> &amp;IRPath : IRPaths) &#123;</span><br><span class="line">  <span class="function">ThreadSafeModule <span class="title">TSM</span><span class="params">(parsePath(IRPath, *TSCtx.getContext()), TSCtx)</span></span>;</span><br><span class="line">  CompileLayer.<span class="built_in">add</span>(MainJD, <span class="built_in">ThreadSafeModule</span>(std::<span class="built_in">move</span>(TSM));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2.8.6 How to Add Process and Library Symbols to JITDylibs</p>
+<p>JIT 代码可能需要访问主机程序或支持库中的符号。 启用此功能的最佳方法是将这些符号反映到您的 JITDylib 中，以便它们看起来与执行会话中定义的任何其他符号相同（即它们可以通过 ExecutionSession::lookup 找到，因此在链接期间对 JIT 链接器可见） 。</p>
+<p>反映外部符号的一种方法是使用absoluteSymbols函数手动添加它们：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="type">const</span> DataLayout &amp;DL = <span class="built_in">getDataLayout</span>();</span><br><span class="line"><span class="function">MangleAndInterner <span class="title">Mangle</span><span class="params">(ES, DL)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> &amp;JD = ES.<span class="built_in">createJITDylib</span>(<span class="string">&quot;main&quot;</span>);</span><br><span class="line"></span><br><span class="line">JD.<span class="built_in">define</span>(</span><br><span class="line">  <span class="built_in">absoluteSymbols</span>(&#123;</span><br><span class="line">    &#123; <span class="built_in">Mangle</span>(<span class="string">&quot;puts&quot;</span>), ExecutorAddr::<span class="built_in">fromPtr</span>(&amp;puts)&#125;,</span><br><span class="line">    &#123; <span class="built_in">Mangle</span>(<span class="string">&quot;gets&quot;</span>), ExecutorAddr::<span class="built_in">fromPtr</span>(&amp;getS)&#125;</span><br><span class="line">  &#125;));</span><br></pre></td></tr></table></figure>
+
+<p>如果要反映的符号集较小且固定，则使用absoluteSymbols 是合理的。另一方面，如果符号集很大或可变，那么由<em>definition generator</em>按需添加定义可能更有意义。<em>definition generator</em>是一个可以附加到 JITDylib 的对象，只要该 JITDylib 中的查找未能找到一个或多个符号，它就会接收回调。在查找继续之前，定义生成器有机会生成缺失符号的定义。</p>
+<p>ORC 提供了 DynamicLibrarySearchGenerator 实用程序，用于为您反映进程（或特定动态库）中的符号。例如，要反映运行时库的整个接口：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="type">const</span> DataLayout &amp;DL = <span class="built_in">getDataLayout</span>();</span><br><span class="line"><span class="keyword">auto</span> &amp;JD = ES.<span class="built_in">createJITDylib</span>(<span class="string">&quot;main&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">auto</span> DLSGOrErr =</span><br><span class="line">    DynamicLibrarySearchGenerator::<span class="built_in">Load</span>(<span class="string">&quot;/path/to/lib&quot;</span></span><br><span class="line">                                        DL.<span class="built_in">getGlobalPrefix</span>()))</span><br><span class="line">  JD.<span class="built_in">addGenerator</span>(std::<span class="built_in">move</span>(*DLSGOrErr);</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  <span class="keyword">return</span> DLSGOrErr.<span class="built_in">takeError</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// IR added to JD can now link against all symbols exported by the library</span></span><br><span class="line"><span class="comment">// at &#x27;/path/to/lib&#x27;.</span></span><br><span class="line">CompileLayer.<span class="built_in">add</span>(JD, <span class="built_in">loadModule</span>(...));</span><br></pre></td></tr></table></figure>
+
+<p>DynamicLibrarySearchGenerator 实用程序还可以使用过滤器函数来构造，以限制可能反映的符号集。例如，要从主进程公开一组允许的符号：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="type">const</span> DataLayout &amp;DL = <span class="built_in">getDataLayout</span>();</span><br><span class="line"><span class="function">MangleAndInterner <span class="title">Mangle</span><span class="params">(ES, DL)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> &amp;JD = ES.<span class="built_in">createJITDylib</span>(<span class="string">&quot;main&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="function">DenseSet&lt;SymbolStringPtr&gt; <span class="title">AllowList</span><span class="params">(&#123;</span></span></span><br><span class="line"><span class="params"><span class="function">    Mangle(<span class="string">&quot;puts&quot;</span>),</span></span></span><br><span class="line"><span class="params"><span class="function">    Mangle(<span class="string">&quot;gets&quot;</span>)</span></span></span><br><span class="line"><span class="params"><span class="function">  &#125;)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Use GetForCurrentProcess with a predicate function that checks the</span></span><br><span class="line"><span class="comment">// allowed list.</span></span><br><span class="line">JD.<span class="built_in">addGenerator</span>(<span class="built_in">cantFail</span>(DynamicLibrarySearchGenerator::<span class="built_in">GetForCurrentProcess</span>(</span><br><span class="line">      DL.<span class="built_in">getGlobalPrefix</span>(),</span><br><span class="line">      [&amp;](<span class="type">const</span> SymbolStringPtr &amp;S) &#123; <span class="keyword">return</span> AllowList.<span class="built_in">count</span>(S); &#125;)));</span><br><span class="line"></span><br><span class="line"><span class="comment">// IR added to JD can now link against any symbols exported by the process</span></span><br><span class="line"><span class="comment">// and contained in the list.</span></span><br><span class="line">CompileLayer.<span class="built_in">add</span>(JD, <span class="built_in">loadModule</span>(...));</span><br></pre></td></tr></table></figure>
+
+<p>对进程或库符号的引用也可以使用符号的原始地址硬编码到 IR 或对象文件中，但是应该首选使用 JIT 符号表的符号解析：它使 IR 和对象在后续 JIT 会话中保持可读和可重用。Hardcoded地址难以阅读，并且通常仅适用于一次会话。</p>
+<ol>
+<li><h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1></li>
+<li><p>为什么会使用raw_ostream?buffer的用处？</p>
+</li>
+<li><p>为什么需要newJITdylib?</p>
+</li>
+<li><p>CollectedUMIs是JITdylib中的UnmaterializedInfosList，为什么还有？</p>
+</li>
+<li><p>为什么会有两趟dispatch MU?</p>
+</li>
+<li><p>为什么在开始有lookup函数之后又有loadcache？</p>
+</li>
+<li></li>
+</ol>
+]]></content>
+      <categories>
+        <category>开发</category>
+      </categories>
+      <tags>
+        <tag>jit</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>UQBT</title>
+    <url>/2024/04/14/UQBT/</url>
+    <content><![CDATA[<p>UQBT: Adaptable  Binary Translation at Low Cost 论文笔记</p>
+<p>在描述机器和操作系统特性的规范的基础上来构建一个二进制翻译器，这种静态二进制转换框架支持各种处理器，包括复杂指令集计算机（CISC）、简化指令集计算机（RISC）和基于堆栈的机器。</p>
+<span id="more"></span>
+
+<h2 id="Design-Goals"><a href="#Design-Goals" class="headerlink" title="Design Goals"></a>Design Goals</h2><p>主流的二进制翻译器都受制于目标机器（需要针对目标机器进行针对化设计），导致开发成本高。UQBT的各个组件都经过精细化开发，实现可以在不同机器上进行重用。</p>
+<p><strong>目标：</strong>UQBT是一个<strong>retargetable and re-sourceable</strong>的二进制翻译器（既可以改变源机器又可以改变目标机器）</p>
+<p><strong>思想：</strong>将machine-dependent和machine-independent的问题进行分离。对于machine-dependent问题则通过描述（或规范）语言支持依赖相关的组件（具体就是将其抽象为某种中间语言），对于machine-independent问题则可以直接复用。</p>
+<p><strong>缺陷</strong>：（一）解决了指令集、中间值（数据的字节顺序）约定、调用约定和二进制文件格式的差别，但未解决操作系统层面的差别（ABI和系统调用？）。（二）处理用户代码（应用程序），但不处理内核代码或动态链接的库。</p>
+<p>准备看看后续的SBT是如何解决上述的问题，关键是内核代码和动态链接库的处理。</p>
+<h2 id="Design"><a href="#Design" class="headerlink" title="Design"></a>Design</h2><h3 id="Support-multiple-machine-inexpensively"><a href="#Support-multiple-machine-inexpensively" class="headerlink" title="Support multiple machine inexpensively"></a>Support multiple machine inexpensively</h3><p>分为三个阶段：解码-分析-编码 （分别对应decoder、analysis和encoder三个组件），前端解码源二进制文件，分析器对程序的表现形式进行转化（IR形式），后端优化编码生成新的二进制文件。</p>
+<p><img src="/images/paper1.PNG" alt="img"></p>
+<p><strong>解码器将其转换为</strong>IR<strong>的形式，UQBT中主要分为两种RTLs和HRTL：</strong></p>
+<p><strong>RTLs（register transfer lists）：用来描述<strong><strong>机器指令</strong></strong>对寄存器的影响，就是说将机器指令转换为一系列对寄存器的操作，并且通过RTLs这个<strong><strong>IR</strong></strong>进行表示便于后续的处理。（每个机器的RTLs都是不一样的，machine-dependent）</strong></p>
+<p><strong>HRTL（Higher-Level</strong> <strong>Register Transfer Language</strong> <strong>）：同样也是描述寄存器操作，支持基本控制传输（条件和无条件跳转、调用和返回）和无限数量的寄存器。（每个机器的HRTL都是一样的，machine-independent）</strong></p>
+<blockquote>
+<p>一个机器的指令集包括：语法（与哪个装配指令相匹配），语义（一个特定的装配指令意味着什么），控制传输指令（哪个指令改变程序的控制流程以及如何进行），以及它的延迟控制传输。</p>
+<p>UQBT使用不同的语言对特性进行了描述：</p>
+<p>Specification Language for Encoding and Decoding (SLED)  :语法（syntax）</p>
+<p>Semantic Specification Language (SSL) :语义（semantics）</p>
+<p>Control-Transfer Language (CTL)： 控制传输指令（control-transfer）</p>
+<p>Delayed Control-Transfer Language(DCTL)： 延迟传输（delayed control transfer） </p>
+<p>操作系统的约定和格式以调用约定（call convention）的形式出现，包括参数传递的位置（例如，堆栈或寄存器）、进程堆栈帧的描述和本地变量所在的位置，以及操作系统所要求的二进制文件格式(binary format)。</p>
+<p>UQBT使用不同的IR对特性进行了描述：</p>
+<p>Procedure Abstraction Language(PAL)：call convention</p>
+<p>Binary File Format (BFF) : binary format </p>
+</blockquote>
+<p><img src="/images/paper2.PNG" alt="img"></p>
+<p><strong>下述内容与上图直接相关</strong></p>
+<h3 id="Decoding-binary-code-to-Ms-RTLs"><a href="#Decoding-binary-code-to-Ms-RTLs" class="headerlink" title="Decoding binary code to Ms-RTLs"></a>Decoding binary code to Ms-RTLs</h3><p>主要可以分为三步：</p>
+<p>一、将源二进制文件解码放入二进制文件解码器（binary-file decoder）生成二进制指令流，并将二进制指令流提供给指令解码器。描述二进制文件格式内容来构建解码器（ELF，PE等）</p>
+<p>二、指令解码器（instruction decoder）将指令流的的每条指令和操作进行识别，使用the New Jersey Machine-Code的工具包根据<strong>SLED</strong>规范自动生成解码器的一部分。</p>
+<p>三、语义映射器（semantic mapper）将每个指令以Ms-RTL的形式映射到其语义表示中。<strong>SSL</strong>通过将每条指令与一个Ms-RTL相关联，来驱动语义映射器。</p>
+<p><strong>二进制文件变**<strong>指令流</strong></strong>-&gt;解析指令流-&gt;具体为寄存器操作**</p>
+<h3 id="Translating-MS-RTLs-up-to-HRTL"><a href="#Translating-MS-RTLs-up-to-HRTL" class="headerlink" title="Translating MS-RTLs up to HRTL"></a>Translating MS-RTLs up to HRTL</h3><p>识别间接控制传输的目标，将基本控制传输转换为HRTL指令，并确定过程调用的参数和返回位置。例如将Pentium基于堆栈的浮点指令转换为flat寄存器模型实现复用。</p>
+<h4 id="Control-transfers"><a href="#Control-transfers" class="headerlink" title="Control transfers"></a>Control transfers</h4><p>使用CTL来实现对有条件的或无条件的跳转、调用和返回的转换。call mapping仅仅识别调用指令本身，然后通过Ms-RTLs和源机器的约定对参数进行推断。</p>
+<h4 id="Recovering-parameters-and-return-values"><a href="#Recovering-parameters-and-return-values" class="headerlink" title="Recovering parameters and return values"></a>Recovering parameters and return values</h4><p>UQBT使用可达性和活动性分析，根据调用约定和可以传递参数和返回值的位置来恢复参数和返回值信息。PAL指定了这些信息（指定ABI–描述了为特定操作系统所允许的调用约定、堆栈帧的分布、分配本地变量的位置等），并描述了过程的堆栈帧和局部变量在堆栈上的有效位置。</p>
+<p>UQBT对调用者和被调用者使用前语和后语（短习语指令序列）的概念。对于被调用者来说，前语和后语分别代表函数的开头和结尾。对于调用者来说千语是自身，后语为调用之后的清理工作。</p>
+<p><img src="/images/paper3.PNG" alt="img"></p>
+<p>Incoming parameters会针对性进行偏移一个simm13的量，%afp是一个抽象帧指针来作为栈帧的参照。</p>
+<p><img src="/images/paper4.PNG" alt="img"></p>
+<p>将其进行等价为HRTL</p>
+<h4 id="Type-analysis"><a href="#Type-analysis" class="headerlink" title="Type analysis"></a>Type analysis</h4><p>UQBT主要分析区分四个类型：整数、浮点值、指向数据的指针和指向代码的指针（包含他们的大小和符号），四个类型足以用来进程的参数和返回值。使用RTLs中的等价语义替换对helper routine的调用。</p>
+<h4 id="Manipulating-HRTL"><a href="#Manipulating-HRTL" class="headerlink" title="Manipulating HRTL"></a>Manipulating HRTL</h4><p>同样转换为HRTL是有利的，能够共用一个翻译器的后端，并且能够使用目标机器的相关约定。此外还可以允许将特定于二进制转换的优化插入到UQBT框架中</p>
+<h3 id="Translating-HRTL-down-to-binary-code"><a href="#Translating-HRTL-down-to-binary-code" class="headerlink" title="Translating HRTL down to binary code"></a>Translating HRTL down to binary code</h3><p>接口到Zephyr project的一部分，然后对HRTL进行翻译。将生成的代码和数据放到各种C和汇编文件中，这些文件可以用目标机器的任何C编译器和汇编器进行编译。每个函数都用一个低级的C文件来表示。对于每个数据部分，UQBT将生成一个汇编文件。并且使用makefile对文件进行打包，以便于针对更为复杂的程序。</p>
+<h4 id="Interpretation-hooks"><a href="#Interpretation-hooks" class="headerlink" title="Interpretation hooks"></a>Interpretation hooks</h4><p>在静态二进制翻译中需要解释器或者仿真器对运行在发现的未翻译的代码进行处理，解释器直接使用Ms-&gt;Mt的映射，这个映射表直接存储在目标二进制文件中，并且会将源代码部分文本也放在目标二进制文件中。</p>
+<h4 id="Target-binaries"><a href="#Target-binaries" class="headerlink" title="Target binaries"></a>Target binaries</h4><p>静态二进制翻译无法解决全部的问题，所以UQBT将数据部分复制到目标二进制文件中，这些数据通过映射器保存为源文件中的虚拟地址（便于直接查找）。</p>
+<h3 id="EXPERIENCE-WITH-THE-UQBT-FRAMEWORK"><a href="#EXPERIENCE-WITH-THE-UQBT-FRAMEWORK" class="headerlink" title="EXPERIENCE WITH THE UQBT FRAMEWORK"></a>EXPERIENCE WITH THE UQBT FRAMEWORK</h3><h4 id="Translation-quality"><a href="#Translation-quality" class="headerlink" title="Translation quality"></a>Translation quality</h4><p>对于同ISA的翻译，执行速度基本一致。Sparc和Pentium，对于缺乏显著静态数据处理的程序，翻译后程序性能更好。对于静态数据处理较多的速度降低1.2到2倍（与大端存储和小端存储相关）。</p>
+<p>大端与小端存储的区别和意义？</p>
+<h4 id="Effort"><a href="#Effort" class="headerlink" title="Effort"></a>Effort</h4><p>架构化，帮助开发者减少对二进制翻译器的开发工作量，节约时间成本，其次架构可以重复使用。</p>
+<h2 id="conclusion"><a href="#conclusion" class="headerlink" title="conclusion"></a>conclusion</h2><p>UQBT项目验证了通过使用规范以低成本支持各种机器来创建适应性强的二进制翻译环境的可行性。</p>
+]]></content>
+      <categories>
+        <category>论文</category>
+      </categories>
+      <tags>
+        <tag>paper</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>个人博客搭建流程</title>
     <url>/2024/04/12/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%B5%81%E7%A8%8B/</url>
     <content><![CDATA[]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
       <tags>
-        <tag>教程</tag>
+        <tag>blob</tag>
       </tags>
   </entry>
 </search>
