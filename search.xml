@@ -141,17 +141,6 @@
       </tags>
   </entry>
   <entry>
-    <title>个人博客搭建流程</title>
-    <url>/2024/04/12/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>blob</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>ORCJIT</title>
     <url>/2024/04/14/JIT/</url>
     <content><![CDATA[<p>本文档介绍MCJIT与ORCJIT执行的内部工作原理 engine 和 RuntimeDyld 组件。它旨在作为一个高层次实现概述，显示流程和交互对象贯穿整个代码生成和动态加载过程。</p>
@@ -343,6 +332,17 @@
       </categories>
       <tags>
         <tag>jit</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>个人博客搭建流程</title>
+    <url>/2024/04/12/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>blob</tag>
       </tags>
   </entry>
 </search>
