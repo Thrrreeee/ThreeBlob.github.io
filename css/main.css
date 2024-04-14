@@ -2696,12 +2696,12 @@ body {
   background-attachment: fixed;
   background-size: cover;
   background-position: 50% 50%;
-  opacity: 0.95;
+  opacity: 0.92;
 }
 .sidebar {
   background-color: transparent;
-  opacity: 0.95;
+  opacity: 0.92;
 }
 .header-inner {
-  background: rgba(255,255,255,0.95);
+  background: rgba(255,255,255,0.92);
 }
