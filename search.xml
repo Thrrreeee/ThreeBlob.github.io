@@ -143,7 +143,121 @@
   <entry>
     <title>个人博客搭建流程</title>
     <url>/2024/04/12/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[]]></content>
+    <content><![CDATA[<p>Hexo 是一款非常方便的静态网站生成器，它能够将你的文章、页面和主题转化为纯 HTML、CSS 和 JavaScript 文件，这意味着你的博客将具备出色的性能和安全性。而Next 主题不仅提供了一系列现代化设计和布局选项，还拥有丰富的插件和定制功能，让你可以根据自己的喜好和需求来打造独一无二的博客。<br>本文将教会如何配置自己的一个博客。</p>
+<span id="more"></span>
+
+<h2 id="一、前置内容"><a href="#一、前置内容" class="headerlink" title="一、前置内容"></a>一、前置内容</h2><h3 id="1、git-的下载："><a href="#1、git-的下载：" class="headerlink" title="1、git 的下载："></a><strong>1、git 的下载</strong>：</h3><p> <a href="git-scm.com">官网下载</a>，下载好后，直接<strong>一直点下一步即可</strong>。</p>
+<h3 id="2、Nodejs下载"><a href="#2、Nodejs下载" class="headerlink" title="2、Nodejs下载:"></a><strong>2、Nodejs下载</strong>:</h3><p>[Nodejs下载](<a href="https://nodejs.org/en/">Node.js — Run JavaScript Everywhere (nodejs.org)</a>)，下载好后，直接<strong>一直点下一步即可</strong>。</p>
+<h2 id="二、hexo创建个人博客"><a href="#二、hexo创建个人博客" class="headerlink" title="二、hexo创建个人博客"></a>二、hexo创建个人博客</h2><p>hexo是什么？</p>
+<ul>
+<li>正如hexo的首页所显示的，它是一款非常快速，简介，高效的博客框架平台，我们可以利用hexo快速生成博客网站的模板，然后部署为我们自己的博客网站。</li>
+</ul>
+<p>直接进入操作：</p>
+<p>1.<strong>在任意盘符中新建Blob文件夹</strong>，这里我创建在了F盘</p>
+<p><img src="/images/blob1.png" alt="img"></p>
+<p>2.<strong>打开Blob文件夹，空白的地方右键，选择 Git Bash Here</strong> ，即我们使用 git 环境创建 hexo的blog模板（必须提前安装好 git）。</p>
+<p>3.<strong>在 git窗口中依次输入以下命令</strong></p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">npm install hexo-cli -g</span><br><span class="line">hexo init blog</span><br><span class="line">cd blog</span><br><span class="line">npm install</span><br><span class="line">hexo server</span><br></pre></td></tr></table></figure>
+
+<p>全部输入完成后，hexo文件夹中便会生成一个 blog 子文件夹，并且blog文件夹里面包含有很多信息：</p>
+<p><img src="/images/blob2.png" alt="img"></p>
+<p>关于这些文件夹，做一个简单的介绍：</p>
+<ul>
+<li>node_modules: 依赖包</li>
+<li>public：存放生成的页面</li>
+<li>scaffolds：生成文章的一些模板</li>
+<li>source：用来存放你的文章</li>
+<li>themes：主题</li>
+</ul>
+<p>然后输入这两条命令：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">hexo g</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
+
+<p>完成后会显示如下内容，则说明<strong>配置成功</strong>!</p>
+<blockquote>
+<p>INFO  Hexo is running at <a href="http://localhost:4000/">http://localhost:4000/</a> . Press Ctrl+C to stop.</p>
+</blockquote>
+<p>在 git 中输入 Ctrl+C 即可关闭hexo s的内容。</p>
+<p>打开浏览器，在浏览器输入 <strong>localhost:4000</strong> 即可进入你的<strong>初始默认博客</strong></p>
+<p>注意：这只是一个<strong>离线版本的博客</strong> ，只能你自己看见，因此我们还需要 GitHub或者 gittee提供的 ssh功能将他变为对外开放的。</p>
+<h2 id="三、GitHub创建仓库"><a href="#三、GitHub创建仓库" class="headerlink" title="三、GitHub创建仓库"></a>三、GitHub创建仓库</h2><ol>
+<li>首先注册一个GitHub的仓库，然后在<strong>个人主页中选择 new 新建仓库</strong></li>
+</ol>
+<p>注意： 仓库名称的<strong>前半部分与你的用户名一致</strong>，<em>username.github.io</em> 即 Thrrreeee，如<a href="https://github.com/Thrrreeee/Thrrreeee.github.io">Thrrreeee.github.io</a></p>
+<ol start="2">
+<li>回到 git bash黑窗口中，<strong>输入以下两个命令</strong>（逐条）：</li>
+</ol>
+<p>yourname改为你的<strong>GitHub的用户名</strong></p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">git config --global user.name &quot;yourname&quot;</span><br></pre></td></tr></table></figure>
+
+<p>youremail改为你的<strong>注册GitHub时的邮箱</strong></p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">git config --global user.email &quot;youremail&quot;</span><br></pre></td></tr></table></figure>
+
+<p>一定不要输入错，这样github才能检查到这个用户属于你</p>
+<ol start="3">
+<li>创建 ssh，输入命令，然后一直回车</li>
+</ol>
+<p>youremail改为你的<strong>注册GitHub时的邮箱</strong></p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -C &quot;youremail&quot;</span><br></pre></td></tr></table></figure>
+
+<p>之后会提示你已完成 ssh的创建，在文件中找到这个路径</p>
+<p><img src="/images/blob3.png" alt="img"></p>
+<ol start="4">
+<li>在 GitHub的 Setting里面，找到 SSH keys，<strong>把 id_rsa.pub 里面的内容全部复制到 key 进去</strong>，title随便写一个就行</li>
+</ol>
+<p>操作完成后，就成功了。</p>
+<h2 id="四、hexo部署到GitHub"><a href="#四、hexo部署到GitHub" class="headerlink" title="四、hexo部署到GitHub"></a>四、hexo部署到GitHub</h2><ol>
+<li><p>在 blog文件夹下面找到 <strong>_config.yml 文件</strong>，这是属于 你的博客的<strong>配置文件</strong>，<strong>点进入一看就知道了，你可以在这里面直接修改 姓名，内容，等用户的信息</strong>。双击打开它（vscode或者其他文本编辑器，记事本都可以）</p>
+</li>
+<li><p>修改一下内容，注意空格</p>
+</li>
+</ol>
+<p><strong>user表示你的GitHub的用户名</strong></p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line"># Deployment</span><br><span class="line">## Docs: https://hexo.io/docs/one-command-deployment</span><br><span class="line"># deploy:</span><br><span class="line">#   type: &#x27;&#x27;</span><br><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: https://github.com/username/username.github.io.git</span><br><span class="line">  branch: master</span><br><span class="line">  # message: Site updated: &#123;&#123; now(&#x27;YYYY-MM-DD HH:mm:ss&#x27;) &#125;&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><strong>说明：类型是 git，远程 ssh连接是 你的 repo输入项，branch 输入gh-pages。</strong></p>
+<p>另外，找到 第16行（或者直接搜索 url）修改url 为</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">https://username.github.io</span><br></pre></td></tr></table></figure>
+
+<p>同样username是你的GitHub的用户名。</p>
+<ol start="3">
+<li>完成后，保存文件并且退出，在 git bash中输入以下命令：</li>
+</ol>
+<p><strong>表示安装 git部署命令工具</strong></p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>最后输入以下三行命令：</li>
+</ol>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>hexo clean</code>清除了你之前生成的东西，也可以不加。 <code>hexo generate</code> 顾名思义，生成静态文章，可以用 <code>hexo g</code>缩写 <code>hexo deploy</code> 部署文章，可以用<code>hexo d</code>缩写</p>
+<p><strong>如果是在离线端即 localhost:4000端测试你的博客，则只需要 hexo g + hexo s 即可，无需 hexo d</strong></p>
+<ol start="5">
+<li>输入完成后会出现一堆内容，不用管他<strong>，只要最后内容如下所示，</strong>就表示成功了！</li>
+</ol>
+<p><img src="/images/Blob4.png" alt="img"></p>
+<p>然后你就可以在</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">username.github.io  # https://username.github.io</span><br></pre></td></tr></table></figure>
+
+<p><strong>访问到你的博客了，其中username是你GitHub用户名，这个网站不是离线的，其他人都可以访问到！！！</strong></p>
+<h2 id="五、页面优化"><a href="#五、页面优化" class="headerlink" title="五、页面优化"></a>五、页面优化</h2><p>页面的优化可以具体参照以下教程：</p>
+<p><a href="https://zhuanlan.zhihu.com/p/618864711">Hexo+Next主题搭建个人博客+优化全过程（完整详细版） - 知乎 (zhihu.com)</a></p>
+<p><a href="https://neveryu.github.io/2017/hexo-next-five/">Hexo-NexT搭建个人博客（五） | Never_yu’s Blog (neveryu.github.io)</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/149575559">Hexo博客建立标签云及效果展示 - 知乎 (zhihu.com)</a></p>
+<p><a href="https://blog.kevinly.com.cn/Hexo-%E7%95%8C%E9%9D%A2%E7%BE%8E%E5%8C%96-%E8%83%8C%E6%99%AF%E8%AE%BE%E7%BD%AE%E4%B8%8E%E6%96%87%E6%9C%AC%E9%80%8F%E6%98%8E%E5%8F%8A%E5%9C%86%E8%A7%92%E5%8C%96/">Hexo 界面美化-背景设置与文本透明及圆角化 | Kevin’s Blog (kevinly.com.cn)</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/252983030">Ubuntu + Hexo + Next 8.0 进阶美化篇二 - 知乎 (zhihu.com)</a></p>
+<p><a href="https://theme-next.iissnan.com/tag-plugins.html">内置标签 - NexT 使用文档 (iissnan.com)</a></p>
+<p><a href="https://llvm.org/docs/LangRef.html#introduction">llvm.org&#x2F;docs&#x2F;LangRef.html#introduction</a></p>
+<p><a href="https://siriusq.top/Next%E4%B8%BB%E9%A2%98%E7%BE%8E%E5%8C%96?tdsourcetag=s_pctim_aiomsg#Next%E4%B8%BB%E9%A2%98%E6%B7%B1%E5%BA%A6%E7%BE%8E%E5%8C%96">Next主题美化(仅7.1版本) | Sirius (siriusq.top)</a></p>
+<h2 id="六、遇到的问题以及解决"><a href="#六、遇到的问题以及解决" class="headerlink" title="六、遇到的问题以及解决"></a>六、遇到的问题以及解决</h2><ol>
+<li><p>hexo s与hexo g之后通过xxx.github.io访问的页面不一致<br><a href="https://blog.csdn.net/counting_stars123/article/details/104594693">Hexo 部署博客时本地预览和部署到github.io上效果不一样_hexo预览和上传结果不同-CSDN博客</a></p>
+</li>
+<li><p>hexo g出现报错<br><a href="https://blog.csdn.net/blog_nankeyimeng/article/details/119944101">二步解决Hexo博客框架在hexo -g时产生的奇怪问题_hexo g 报错-CSDN博客</a></p>
+</li>
+<li><p>hexo d成功后仍然无法访问<br><a href="https://blog.csdn.net/qq32933432/article/details/87955133">【亲测解决】hexo搭建Github博客上传后，访问网页显示404问题解决方案_hexo发布到github上404-CSDN博客</a></p>
+</li>
+</ol>
+]]></content>
       <categories>
         <category>学习</category>
       </categories>
